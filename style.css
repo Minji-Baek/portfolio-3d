@@ -1,15 +1,27 @@
 html, body {
   /* background-color: #000000; */
-}
-
-* {
   margin: 0;
   padding: 0;
 }
 
-#app {
+* {
+  box-sizing: border-box;
+
+}
+
+#canvas {
   position: fixed;
   top: 0;
   left: 0;
-  outline: none;
 }
+
+/* #app {
+  position: relative;
+  min-height: 200vh;
+} */
+.scroll-planet{
+  position: relative;
+  min-height: 180vh;
+  pointer-events: none;
+}
+

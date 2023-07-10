@@ -49,7 +49,7 @@ export default async function init () {
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.maxAzimuthAngle = Math.PI / 2;
-  controls.maxPolarAngle = Math.PI;
+  controls.maxPolarAngle = Math.PI ;
   controls.enableZoom = false;
   controls.dampingFactor = 0.1;
   controls.saveState();
@@ -60,20 +60,13 @@ export default async function init () {
   const font =  await fontLoader.loadAsync('../../assets/fonts/Gugi_Regular.json');
   let numberText = null;
   let titleText = null;
+  let scrollCont = 0;
   let changeObjArry = [];
   let vecArry = [];
-  let isChanging = false;
   const clickAni = gsap.timeline({
     id: 'click',
     smoothChildTiming: true,
     autoRemoveChildren: true,
-    onUpdate: ()=>{
-      isChanging = true,
-      console.log(isChanging)
-    },
-    onComplete: ()=> {
-      isChanging = false
-    }
 
   });
 
@@ -251,7 +244,7 @@ export default async function init () {
     directionalLight.castShadow = true;
     scene.add( directionalLight);
 
-    vecArry = plantArry.map((arr, index)=>{
+    vecArry = plantArry.flatMap((arr, index)=>{
       const div = document.createElement('div');
       div.className = 'scroll-planet';
       div.id = `planet-${index}`;
@@ -289,14 +282,14 @@ export default async function init () {
           const selectArr =  plantArry.filter((arry) => {return arry.planet.id === object.parent.id} );
           selectArr[0].animation('big'); //animation
 
-          const changeArr = changeObjArry.filter((obj)=> { return obj.id === object.id});
+          const changeArr = changeObjArry.filter((obj)=> { return obj.parent.id === object.parent.id});
           if(changeArr.length > 0){ //같은게 있는 상황
             // console.log("중복")
             return;
           }
           //같은게 없어서 array에 넣음
          
-          console.log(selectArr[0]);
+          // console.log(selectArr[0]);
           changeObjArry.push(object);// 커지는거 
         }
 
@@ -316,59 +309,20 @@ export default async function init () {
     
     // raycatster.setFromCamera(pointer, camera);
     const intersects = raycatster.intersectObjects(scene.children);
-    if(intersects.length > 0 && !isChanging){
+    console.log(vecArry)
+    if(intersects.length > 0  && !clickAni.isActive()){
       const object = intersects[0].object;
         if(object.name === 'skeletone' || object.name === 'cube'){
-          console.log(object.userData.index);
-          let repeatCount = (object.userData.index - 3)
-          if(repeatCount < 0){
-            repeatCount += 6
-          }
-          for( let i = 0; i <  repeatCount; i ++ ){
-            vecArry.forEach((vec, index) => {
-              let planetIndex = (index + repeatCount) %  plantArry.length;
-              if(planetIndex === (vecArry.length)){
-                planetIndex = 0;
-              }
-              clickAni
-                .to(plantArry[planetIndex].planet.position, {
-                  x: vec.x,
-                  y: vec.y,
-                  z: vec.z,
-                  duration: 1,
-                  onUpdate: () =>{
-                    isChanging = true;
-                  },
-                  onComplete: () =>{
-                    plantArry[planetIndex].cube.userData.index = (repeatCount + 3) %  vecArry.length;
-                    plantArry[planetIndex].skeletone.index =(repeatCount + 3) %  vecArry.length;
-                    isChanging = false;
-                  }
-                }, '<')
-            });
-            // clickAni.play();
-          }
-          // const animaion = gsap.to(object.parent.position, );
-          // vecArry.forEach((vec)=>{
-          //   animaion.vars = {
-          //     x: vec.x,
-          //     y: vec.y,
-          //     z: vec.z,
-              
-          //   }
-          // })
-         
-          //  gsap.to(object.parent.position , {
-          //   x :  Math.PI /90,
-          //   z :  Math.PI /90,
-          //   duration: 1,
-          // })
-          // for(let i = 0; i < changeObjArry.length; i ++ ){
-          //   changeObjArry[i].planet
-          // }
-          // object.parent.position.x *= 3 * Math.cos( 60 * (Math.PI / 180)),
-          // object.parent.position.y *= 3 * Math.sin( 60 * (Math.PI / 180))
           controls.reset();
+          let repeatCount = (object.userData.index -3);
+          
+          if(repeatCount < 0){
+            repeatCount = repeatCount + 6;
+          }
+          console.log(repeatCount);
+          // gsap.getById(`#${container.children[repeatCount].id}`).scrollTrigger.scroll(`#${container.children[repeatCount].id}`);
+          // 현재 보이는 index랑 click한 index와의 차이 == i
+         
         }
         
         
@@ -412,6 +366,7 @@ export default async function init () {
         trigger: `#${container.children[i].id}`,
         start: 'top top', // 언제 어딜 지나면 시작할지
         end: 'bottom top', 
+        ariaLabel: `#${container.children[i].id}`,
         markers: true,
         scrub: true, //바로바뀜이 아니라 지정만큼 천천히
       }});
@@ -429,7 +384,7 @@ export default async function init () {
             x: vec.x,
             y: vec.y,
             z: vec.z,
-            duration: 3
+            duration: 3,
           }, '<')
       });
     }
@@ -438,7 +393,7 @@ export default async function init () {
   const addEvent = (obj) => {
     const {  planetGroup, plantArry  } = obj;   
     window.addEventListener('resize', resize);
-    // addScrollEvent(plantArry);
+    addScrollEvent(plantArry);
 
     window.addEventListener('pointermove',(event) =>  handlerPointerMove(event, plantArry));
     window.addEventListener('pointerdown',(event) =>  handlerPointerDown(event, plantArry));
@@ -449,7 +404,7 @@ export default async function init () {
   const draw = (obj) => {
     const {  planetGroup, plantArry  } = obj;   
     // earth.update(controls, clock.getElapsedTime());
-    plantArry.forEach(planet => planet.update(clock.getElapsedTime(), isChanging))
+    plantArry.forEach(planet => planet.update(clock.getElapsedTime()))
     // camera.lookAt(planetGroup.children[5].position);
     controls.update();
     renderer.render(scene, camera);   

@@ -51,6 +51,7 @@ export default class Planet {
 
     this.cube = createCube();
     this.skeletone = createSkeletone();
+
     this.picture = createPlane();
     this.picture.visible = false;
     this.picture.rotation.set(-4.5, -0.3, 2.8);
@@ -63,19 +64,18 @@ export default class Planet {
     this.planet.add(this.cube, this.skeletone, this.picture);
     this.planet.position.set( planetRadius * Math.cos( this.radian ), planetRadius * Math.sin( this.radian ), 0);
     const hover = gsap.timeline({
-      id: `hover-${index}`,
-      smoothChildTiming: true,
-      autoRemoveChildren: true,
+      id: `${this.index}`,
+      // smoothChildTiming: true,
+      // autoRemoveChildren: true,
     });
     this.hover = hover;
   }
   animation(to){
     if(this.hover.isActive()) {
-      this.hover.clear();
-    };
-
+      this.hover.clear(true);
+    }
+    
     if(to === 'big'){     
-      console.log("커짐")
       this.hover.to(this.skeletone.scale, {
         x : 0,
         y : 0,
@@ -86,11 +86,10 @@ export default class Planet {
       x : 1.8,
       y : 1.8,
       z : 1.8,
-      duration: 0.3,
+      duration: 0.4,
       }, '<')
       .to(this.cube.material, {
         opacity : 0.4,
-        transparent: true,
         duration: 0.4,
       }, '<')
       .to(this.picture.scale, {
@@ -102,12 +101,12 @@ export default class Planet {
           this.picture.visible = true;
         },
         onComplete: ()=>{
-          this.hover.clear();
+       
+          this.hover.clear(true);
         },
       }, '<');
 
     }else{
-      console.log("작아짐")
       this.hover.to(this.skeletone.scale,{
         x : 1,
         y : 1,
@@ -122,7 +121,6 @@ export default class Planet {
       }, '<')
       .to(this.cube.material, {
         opacity : 1,
-        transparent: false,
         duration: 0.4,
       }, '<')
       .to(this.picture.scale, {
@@ -132,7 +130,7 @@ export default class Planet {
         duration: 0.3,
         onComplete: ()=>{
           this.picture.visible = false;
-          this.hover.clear();
+          this.hover.clear(true);
         },
       }, '<');
     }
@@ -144,7 +142,11 @@ export default class Planet {
     this.cube.rotation.y = clock * 0.8;
     this.skeletone.rotation.x = clock * 1.3;
     this.skeletone.rotation.y = clock * 1.3;
-
+    if(!this.hover.isActive() && !this.picture.visible){
+      if(this.skeletone.scale.x !== 1)
+        this.skeletone.scale.set(1, 1, 1);
+    }
+   
   }
 
  

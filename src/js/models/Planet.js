@@ -8,7 +8,6 @@ export default class Planet {
     this.index = index / 60 - 1;
     this.radian = index * (Math.PI / 180);
     this.planetRadius = planetRadius;
-
     // this.texture.magFilter = THREE.LinearMipmapLinearFilter;
     const createCube = ()=>{
       const cubeGeometry = new THREE.IcosahedronGeometry(cubeR);
@@ -20,7 +19,6 @@ export default class Planet {
       const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
       cube.name = 'cube';
       cube.userData = {
-        isHover : false,
         index: this.index
       }
       return cube
@@ -37,7 +35,6 @@ export default class Planet {
       const skeletone = new THREE.Mesh(skeletonGeometry, skeletonMaterial);
       skeletone.name = 'skeletone';
       skeletone.userData = {
-        isHover : false,
         index: this.index
       }
       return skeletone;
@@ -65,64 +62,80 @@ export default class Planet {
 
     this.planet.add(this.cube, this.skeletone, this.picture);
     this.planet.position.set( planetRadius * Math.cos( this.radian ), planetRadius * Math.sin( this.radian ), 0);
+    const hover = gsap.timeline({
+      id: `hover-${index}`,
+      smoothChildTiming: true,
+      autoRemoveChildren: true,
+    });
+    this.hover = hover;
   }
   animation(to){
-    if(to === 'big'){
-      gsap.to(this.skeletone.scale, {
+    if(this.hover.isActive()) {
+      this.hover.clear();
+    };
+
+    if(to === 'big'){     
+      console.log("커짐")
+      this.hover.to(this.skeletone.scale, {
         x : 0,
         y : 0,
         z : 0,
-        duration: 2
-      });
-      gsap.to(this.cube.scale, {
+        duration: 0.5
+      }, '<')
+      .to(this.cube.scale, {
       x : 1.8,
       y : 1.8,
       z : 1.8,
-      duration: 1,
-      });
-      gsap.to(this.cube.material, {
+      duration: 0.3,
+      }, '<')
+      .to(this.cube.material, {
         opacity : 0.4,
         transparent: true,
-        duration: 1,
-      });
-      gsap.to(this.picture.scale, {
+        duration: 0.4,
+      }, '<')
+      .to(this.picture.scale, {
         x : 2.3,
         y : 2.3,
         z : 2.3,
-        duration: 1,
+        duration: 0.3,
         onStart: ()=>{
           this.picture.visible = true;
-        }
-      });
+        },
+        onComplete: ()=>{
+          this.hover.clear();
+        },
+      }, '<');
+
     }else{
-      gsap.to(this.skeletone.scale,{
+      console.log("작아짐")
+      this.hover.to(this.skeletone.scale,{
         x : 1,
         y : 1,
         z : 1,
-        duration: 1
-      });
-      gsap.to(this.cube.scale, {
+        duration: 0.5
+      }, '<')
+      .to(this.cube.scale, {
         x : 1,
         y : 1,
         z : 1,
-        duration: 1
-      });
-      gsap.to(this.cube.material, {
+        duration: 0.4,
+      }, '<')
+      .to(this.cube.material, {
         opacity : 1,
         transparent: false,
-        duration: 1,
-      });
-      gsap.to(this.picture.scale, {
+        duration: 0.4,
+      }, '<')
+      .to(this.picture.scale, {
         x : 1,
         y : 1,
         z : 1,
-        duration: 0.8,
+        duration: 0.3,
         onComplete: ()=>{
           this.picture.visible = false;
+          this.hover.clear();
         },
-      });
+      }, '<');
     }
-    
   }
   
 
@@ -131,16 +144,8 @@ export default class Planet {
     this.cube.rotation.y = clock * 0.8;
     this.skeletone.rotation.x = clock * 1.3;
     this.skeletone.rotation.y = clock * 1.3;
-    
-    if(this.skeletone.userData.isHover || this.cube.userData.isHover){
-      this.animation('big');
-    }else if(!this.skeletone.userData.isHover || !this.cube.userData.isHover){
-      this.animation('small');
-    }else{
-      gsap.killTweensOf(this.skeletone.scale);
-      gsap.killTweensOf(this.cube.scale);
-      gsap.killTweensOf(this.cube.material);
-      gsap.killTweensOf(this.picture.scale);
-    }
+
   }
+
+ 
 }

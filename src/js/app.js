@@ -364,7 +364,6 @@ export default async function init () {
 
   const addScrollEvent = (plantArry) => {
     for(let i = 0; i < container.children.length; i++ ){
-      console.log(container.children)
       const t1 = gsap.timeline({ 
         scrollTrigger: {
         trigger: `#${container.children[i].id}`,
@@ -374,7 +373,9 @@ export default async function init () {
         scrub: true, //바로바뀜이 아니라 지정만큼 천천히
       }});
       const plus = (i + 1) % container.children.length ;
-
+      if(i === (container.children.length - 1)){
+        return ;
+      }
       vecArry.forEach((vec, index)=> {
         let planetIndex = (index + plus) %  plantArry.length;
         if(planetIndex === (vecArry.length)){

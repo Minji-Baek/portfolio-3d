@@ -9,13 +9,21 @@ import Data from './data/data';
 import {FontLoader} from 'three/examples/jsm/loaders/FontLoader';
 import {TextGeometry} from 'three/examples/jsm/geometries/TextGeometry';
 import gsap from 'gsap';
+import {ScrollTrigger} from 'gsap/ScrollTrigger';
 
 
 export default async function init () {
+
+  const container = document.querySelector('#app');
+  gsap.registerPlugin(ScrollTrigger); // scrollTrigger을 사용할수있음
+  const canvas = document.querySelector('#canvas');
+
   const renderer = new THREE.WebGLRenderer({
+    antialias: true, //pixel 다듬기?
     alpha: true,
-    antialias: true
+    canvas: canvas, 
   });
+
   renderer.setClearColor(0x333333, 1);
   renderer.shadowMap.enabled = true;
   const canvasSize = {
@@ -23,7 +31,6 @@ export default async function init () {
     height: window.innerHeight,
   };
   const clock = new THREE.Clock();
-  const textureLoader = new THREE.TextureLoader();
   const projectTextureLoader = new THREE.TextureLoader();
   const fontLoader = new FontLoader();
 
@@ -36,12 +43,16 @@ export default async function init () {
     0.1,
     100
   );
-  camera.position.set( -0.073, -0.017, 3.689);
+ 
   // -0.073, -0.017, 3.689
-
+  camera.position.set( -0.073, -0.017, 3.689);
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
+  controls.maxAzimuthAngle = Math.PI / 2;
+  controls.maxPolarAngle = Math.PI;
+  controls.enableZoom = false;
   controls.dampingFactor = 0.1;
+  controls.saveState();
   const planetRadius = 3;
 
   const raycatster = new THREE.Raycaster();
@@ -51,8 +62,7 @@ export default async function init () {
   let numberText = null;
   let titleText = null;
   let changeObjArry = [];
-
-
+  let vecArry = [];
 
   const createText = (content) => {
     const textGeometry = new TextGeometry(content,{ 
@@ -79,14 +89,14 @@ export default async function init () {
     const planetGroup = new THREE.Group();
     let plantArry = [];
     for (let i = 60; i <= 360; i += 60) {
-      const rad = i * (Math.PI / 180);
-      const index = i/60 - 1;
-      const planetG = new Planet({cubeR: 0.22, skeleR: 0.4, texture: projectTextureLoader.load(data.data[i/60 - 1].img) });
-      planetG.picture.visible = false;
-      planetG.picture.rotation.set(-4.5, -0.3, 2.8);
-      planetG.planet.position.set( planetRadius * Math.cos( rad ), planetRadius * Math.sin( rad ), 0);
-    
+      const planetG = new Planet({cubeR: 0.22, skeleR: 0.4, texture: projectTextureLoader.load(data.data[i/60 - 1].img), index: i, planetRadius: planetRadius });
+      planetGroup.name = 'renderPlanet';
+      planetGroup.add( planetG.planet);
+      plantArry.push(planetG);
+      
       //font test
+
+  /*
       // if(i/60 === 4){
         
       //   const text = gui.addFolder('titleText').close();
@@ -129,15 +139,14 @@ export default async function init () {
       //   .max(10)
       //   .step(0.001);
       // }
+    */
      
-      planetG.planet.userData.dataIndex = index;
-      planetGroup.name = 'renderPlanet';
-      planetGroup.add( planetG.planet);
-      plantArry.push(planetG);
+    
     };
 
 
     //font 추후 추가
+    /*
     // scene.add(earth.earth, planetGroup );
     // numberText = createText('1');
     // titleText = createText(data.data[3].title);
@@ -216,12 +225,25 @@ export default async function init () {
           //     titleText.scale.set(0.3, 0.3, 0.3);
           //   }
           // });
+          */
 
     scene.add(planetGroup);
     // scene.add(planetGroup, numberText, titleText);
-
+   
+    planetGroup.rotation.set(4.733, 2.702, 0.49 );
+    // console.log( camera.position.dot(plantArry[3].planet.position))
+    // controls.target.distanceTo(controls.object.position)
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     directionalLight.castShadow = true;
+    
+
+    vecArry = plantArry.map((arr, index)=>{
+      const div = document.createElement('div');
+      div.className = 'scroll-planet';
+      div.id = `planet-${index}`;
+      container.appendChild(div);
+      return arr.planet.position;
+    });
     scene.add(directionalLight);
     
     return {
@@ -239,12 +261,13 @@ export default async function init () {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   };
 
-  function handlerPointerDown(event) {
+  function handlerPointerMove(event) {
     pointer.x = (event.clientX / window.innerWidth -0.5) * 2; // 중심이 0,0이고 1~-1 사이인 x인 pointer
     pointer.y = -(event.clientY / window.innerHeight -0.5) * 2;// 중심이 0,0이고 1~-1 사이인 y인 pointer
 
     raycatster.setFromCamera(pointer, camera);
     const intersects = raycatster.intersectObjects(scene.children);
+
     if(intersects.length > 0){
       const object = intersects[0].object;
       // console.log(object)
@@ -265,11 +288,50 @@ export default async function init () {
     }else{
       changeObjArry.forEach(obj => {
         obj.userData.isHover = false;
-        console.log("ㅇ/ㅐ는>")
+        // console.log("ㅇ/ㅐ는>")
        
       });
       changeObjArry = [];
-      console.log("이게 돌아서 그른가..")
+      // console.log("이게 돌아서 그른가..")
+    }  
+  }
+
+  function handlerPointerDown (event) {
+    // pointer.x = (event.clientX / window.innerWidth -0.5) * 2; // 중심이 0,0이고 1~-1 사이인 x인 pointer
+    // pointer.y = -(event.clientY / window.innerHeight -0.5) * 2;// 중심이 0,0이고 1~-1 사이인 y인 pointer
+    
+    // raycatster.setFromCamera(pointer, camera);
+    const intersects = raycatster.intersectObjects(scene.children);
+    if(intersects.length > 0){
+      const object = intersects[0].object;
+        if(object.name === 'skeletone' || object.name === 'cube'){
+          console.log('이게 켜져야 된당', object);
+          // const animaion = gsap.to(object.parent.position, );
+          // vecArry.forEach((vec)=>{
+          //   animaion.vars = {
+          //     x: vec.x,
+          //     y: vec.y,
+          //     z: vec.z,
+              
+          //   }
+          // })
+         
+          //  gsap.to(object.parent.position , {
+          //   x :  Math.PI /90,
+          //   z :  Math.PI /90,
+          //   duration: 1,
+          // })
+          // for(let i = 0; i < changeObjArry.length; i ++ ){
+          //   changeObjArry[i].planet
+          // }
+          // object.parent.position.x *= 3 * Math.cos( 60 * (Math.PI / 180)),
+          // object.parent.position.y *= 3 * Math.sin( 60 * (Math.PI / 180))
+          controls.reset();
+        }
+        
+        
+    }else{
+     
     }  
   }
 
@@ -300,11 +362,46 @@ export default async function init () {
   }
 
 
+  const addScrollEvent = (plantArry) => {
+    for(let i = 0; i < container.children.length; i++ ){
+      console.log(container.children)
+      const t1 = gsap.timeline({ 
+        scrollTrigger: {
+        trigger: `#${container.children[i].id}`,
+        start: 'top top', // 언제 어딜 지나면 시작할지
+        end: 'bottom bottom', // 언제 어딜 지나면 시작할지
+        markers: true,
+        scrub: true, //바로바뀜이 아니라 지정만큼 천천히
+      }});
+      const plus = (i + 1) % container.children.length ;
 
+      vecArry.forEach((vec, index)=> {
+        let planetIndex = (index + plus) %  plantArry.length;
+        if(planetIndex === (vecArry.length)){
+          planetIndex = 0;
+        }
+        t1
+          .to(plantArry[planetIndex].planet.position, {
+            x: vec.x,
+            y: vec.y,
+            z: vec.z,
+            duration: 1.5,
+            onStart: ()=>{
+              controls.reset();
+            }
+          }, '<')
+      });
+    }
+  }
 
-  const addEvent = () => {
+  const addEvent = (obj) => {
+    const {  planetGroup, plantArry  } = obj;   
     window.addEventListener('resize', resize);
-    window.addEventListener('pointermove', handlerPointerDown);
+    window.addEventListener('pointermove', handlerPointerMove);
+    window.addEventListener('pointerdown', handlerPointerDown);
+    
+    addScrollEvent(plantArry);
+   
   };
 
   const draw = (obj) => {
@@ -324,17 +421,15 @@ export default async function init () {
   const initialize = async() => {
     const gui = new GUI();
     
-    const container = document.querySelector('#app');
-    container.appendChild(renderer.domElement);
-    addEvent();
-   
+    // container.appendChild(renderer.domElement);
     const obj = create(gui);
+    addEvent(obj);
     console.log(obj)
     resize();
     draw(obj);
 
     // obj.planetGroup.rotation.set(4.8, 2.73, 0.37 );
-    obj.planetGroup.rotation.set(4.733, 2.702, 0.49 );
+   
 
    
     const planetFold = gui.addFolder('objPosition').close();
@@ -376,48 +471,6 @@ export default async function init () {
     .min(-10)
     .max(10)
     .step(0.001);
-
-
-    const cameraPos = gui.addFolder('cameraPosition').close();
-    cameraPos
-    .add(camera.position, 'x')
-    .min(-10)
-    .max(10)
-    .step(0.001);
-
-    cameraPos
-    .add(camera.position, 'y')
-    .min(-10)
-    .max(10)
-    .step(0.001);
-
-
-    cameraPos
-    .add(camera.position, 'z')
-    .min(-10)
-    .max(10)
-    .step(0.001);
-
-    // const cameraRotate = gui.addFolder('cameraRotate');
-    // console.log(controls)
-    // cameraRotate
-    // .add(controls.rotation, 'x')
-    // .min(-10)
-    // .max(10)
-    // .step(0.001);
-
-    // cameraRotate
-    // .add(controls.rotation, 'y')
-    // .min(-10)
-    // .max(10)
-    // .step(0.001);
-
-
-    // cameraRotate
-    // .add(controls.rotation, 'z')
-    // .min(-10)
-    // .max(10)
-    // .step(0.001);
 
   };
 

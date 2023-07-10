@@ -2,9 +2,13 @@ import * as THREE from 'three';
 import gsap from 'gsap';
 
 export default class Planet {
-  constructor({cubeR, skeleR, texture} ){
+  constructor({cubeR, skeleR, texture, index, planetRadius: planetRadius} ){
     this.radius = cubeR;
     this.texture = texture;
+    this.index = index / 60 - 1;
+    this.radian = index * (Math.PI / 180);
+    this.planetRadius = planetRadius;
+
     // this.texture.magFilter = THREE.LinearMipmapLinearFilter;
     const createCube = ()=>{
       const cubeGeometry = new THREE.IcosahedronGeometry(cubeR);
@@ -17,6 +21,7 @@ export default class Planet {
       cube.name = 'cube';
       cube.userData = {
         isHover : false,
+        index: this.index
       }
       return cube
     }
@@ -33,6 +38,7 @@ export default class Planet {
       skeletone.name = 'skeletone';
       skeletone.userData = {
         isHover : false,
+        index: this.index
       }
       return skeletone;
     }
@@ -49,11 +55,16 @@ export default class Planet {
     this.cube = createCube();
     this.skeletone = createSkeletone();
     this.picture = createPlane();
+    this.picture.visible = false;
+    this.picture.rotation.set(-4.5, -0.3, 2.8);
+
     this.planet = new THREE.Group();
     this.planet.userData = {
-      dataIndex : 0
+      dataIndex : this.index,
     }
+
     this.planet.add(this.cube, this.skeletone, this.picture);
+    this.planet.position.set( planetRadius * Math.cos( this.radian ), planetRadius * Math.sin( this.radian ), 0);
   }
   animation(to){
     if(to === 'big'){

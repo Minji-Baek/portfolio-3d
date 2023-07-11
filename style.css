@@ -1,12 +1,67 @@
+
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+
 html, body {
   /* background-color: #000000; */
   margin: 0;
   padding: 0;
+}::-webkit-scrollbar {
+  display: none;
 }
 
 * {
   box-sizing: border-box;
 
+}
+#app::-webkit-scrollbar {
+  display: none;
 }
 
 #canvas {
@@ -23,5 +78,102 @@ html, body {
   position: relative;
   min-height: 180vh;
   pointer-events: none;
+
+}
+
+a{
+  color: unset;
+  text-decoration: unset;
+}
+
+header{
+  color: #cccccc;
+  position: fixed;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+  height: 34px;
+  z-index: 2;
+}
+
+.button-in-header{
+  padding : 20px;
+  font-weight: 700;
+  font-size: medium;
+  cursor: pointer;
+  height: 50px;
+  box-sizing: border-box;
+}
+
+.button-in-header:hover {
+  /* background-color: #3dcccc; */
+  background-color: #d2fa87;
+
+}
+
+#right-buttons {
+  display: flex;
+}
+
+#active-menu{
+  background-color: #b052db;
+}
+
+.long-text{
+  display: none;
+}
+
+.short-text{
+  display: inline-flex;
+}
+
+@media (min-width: 880px){
+  .long-text{
+    display: inline-flex;
+  }
+  .short-text{
+    display: none;
+  }
+}
+
+#warning-click{
+  position: fixed;
+  display: none;
+}
+
+#warning-scroll{
+  position: fixed;
+  display: none;
+}
+
+.show{
+  display: flex !important;
+  width: 100%;
+  height: 20%;
+  margin-top: 7vh;
+  justify-content: center;
+  text-align: center;
+  color: #cccccc;
+  z-index: 2;
+  animation: twinke 2s infinite;
+}
+
+@keyframes twinke {
+  0% {
+    opacity: 0;
+  }
+  25%{
+    opacity: 0.5;
+  }
+  50%{
+    opacity: 0;
+  }
+  75%{
+    opacity: 1;
+  }
+  100%{
+    opacity: 0;
+  }
 }
 

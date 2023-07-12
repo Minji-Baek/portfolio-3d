@@ -160,9 +160,7 @@ export default async function init () {
       }) //animation
       
     }else{
-      if(plantArry){
-        setCanvasRefresh(plantArry);
-      }
+      
       // console.log('비었답니다')
     }
   }
@@ -250,7 +248,6 @@ export default async function init () {
             z: 3.2,
             duration: 2,
             onComplete: ()=>{
-              // scene.fog = new THREE.Fog(0xf0f0f0, 300, 500);
               openDescription(object.userData.index);
             }
           })
@@ -261,7 +258,7 @@ export default async function init () {
     }
   }
  
-  function handlerWheel (plantArry) {
+  const handlerWheel = (plantArry) => {
     console.log("wheel이 돌아갑니다")
     reset(plantArry);
   } 
@@ -275,12 +272,12 @@ export default async function init () {
     console.log(data.data[index]);
 
     const description = new Description(data.data[index], index);
-    plantArry = description.setDescriptionEle();
+    needRefresh = description.setDescriptionEle();
     
     window.removeEventListener('wheel',handlerWheel);
-    cancelAnimationFrame(frameId);
+    // cancelAnimationFrame(frameId);
 
-    console.log(data.data[index]);
+    console.log(data.data[index], needRefresh);
   }
 
   const addEvent = (obj) => {
@@ -289,6 +286,16 @@ export default async function init () {
     addScrollEvent(plantArry);
 
     canvas.addEventListener('pointermove',(event) =>  handlerPointerMove(event, plantArry));
+
+    window.addEventListener('mouseup',()=>{
+      if(needRefresh){
+          setTimeout(() => {
+          setCanvasRefresh(plantArry);
+          needRefresh = false;
+        }, 2.0*1000);
+      }
+    } )
+
     canvas.addEventListener('pointerdown',(event) =>  handlerPointerDown(event, plantArry));
     canvas.addEventListener('dblclick', (event) => handlerClickDouble(event, plantArry));
     window.addEventListener('wheel', handlerWheel(plantArry));
@@ -318,17 +325,24 @@ export default async function init () {
     document.querySelector('#canvas').removeAttribute('class', 'disable');
     document.querySelector('#scroll').removeAttribute('class', 'disable');
     document.querySelector('header').removeAttribute('class', 'disable');
-    // requestAnimationFrame(frameId);
     draw({plantArry});
+    controls.reset();
+    reset(plantArry);
+    document.querySelector("#planet-0").scrollIntoView({
+      behavior: 'smooth'
+    })
   }
  
 
   const draw = (obj) => {
     const { plantArry  } = obj;   
+   
     // earth.update(controls, clock.getElapsedTime());
     plantArry.forEach(planet => planet.update(clock.getElapsedTime()))
     controls.update();
+   
     renderer.render(scene, camera);   
+    // console.log("dksehaf??????")
     frameId = requestAnimationFrame(() => {
       draw(obj);
     });

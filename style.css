@@ -1,4 +1,5 @@
-
+@import './src/style/description.css';
+@import url('https://fonts.googleapis.com/css2?family=Gugi&display=swap');
 /* http://meyerweb.com/eric/tools/css/reset/ 
    v2.0 | 20110126
    License: none (public domain)
@@ -52,6 +53,8 @@ html, body {
   /* background-color: #000000; */
   margin: 0;
   padding: 0;
+  font-family: 'Gugi', Arial, Helvetica, sans-serif, cursive;
+  
 }::-webkit-scrollbar {
   display: none;
 }
@@ -60,8 +63,9 @@ html, body {
   box-sizing: border-box;
 
 }
-#app::-webkit-scrollbar {
-  display: none;
+
+.disable{
+  display: none ;
 }
 
 #canvas {
@@ -70,10 +74,13 @@ html, body {
   left: 0;
 }
 
-/* #app {
+#app {
   position: relative;
   min-height: 200vh;
-} */
+}
+
+
+
 .scroll-planet{
   position: relative;
   min-height: 180vh;
@@ -92,17 +99,19 @@ header{
   display: flex;
   justify-content: space-between;
   width: 100%;
+  text-align: center;
   align-items: center;
-  height: 34px;
+  height: 50px;
   z-index: 2;
 }
 
 .button-in-header{
   padding : 20px;
   font-weight: 700;
-  font-size: medium;
+  font-size: 1.5rem;
   cursor: pointer;
-  height: 50px;
+  text-align: center;
+  height: 60px;
   box-sizing: border-box;
 }
 
@@ -176,4 +185,6 @@ header{
     opacity: 0;
   }
 }
+
+
 

@@ -22,8 +22,42 @@
     </header>
     <div id="warning-click" >Please Double-Click If you want see more info about it</div>
     <div id="warning-scroll" >Can you back with scroll</div>
+    <div id="app">
+      <div id="scroll"></div>
+      <div id="description" class="disable">
+        <div class="description-button-wrapper">
+          <button class="description-button">close</button>
+        </div>
+        <div class="description-wrapper">
+          <div class="description-container">
+            <div class="description-title">
+              <div id="title" class="description-subtitle"></div>
+              <div id="description" class="description-detail"></div>
+            </div>
+
+            <div class="description-info">
+              <div class="description-info-title">
+                <div id="date" class="description-column-title">DATE</div>
+                <div id="pitch" class="description-column-title">PITCH</div>
+                <div id="company" class="description-column-title">COMPANY</div>
+                <div id="role" class="description-column-title">ROLE</div>
+                <div id="tech" class="description-column-title">TECH</div>
+              </div>
+              <div class="description-info-content">
+                <div id="date" class="description-column-content"> </div>
+                <div id="pitch" class="description-column-content"> </div>
+                <div id="company" class="description-column-content"> </div>
+                <div id="role" class="description-column-content"> </div>
+                <div id="tech" class="description-column-content"> </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+   
     <canvas id="canvas"></canvas>
-    <div id="app"></div>
+
     <script type="module" src="./main.js"></script>
   </body>
 </html>

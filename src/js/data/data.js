@@ -58,19 +58,36 @@ export default class Data {
             }
     case 'project' : {
       this.data = [
-        { title: 'KakakoBank Clone Portpolio.ver', date:[ '202305', '202305'], Languege: ['Javascript', 'HTML', 'CSS'], 
-        detail: ['독학하여 만들어보는 Toy Project', 'KakakoBank Clone Base', ' html, javascript, css ', '자주 사용되는 slider library도 직접 만들어보며 libaray에 의존하지 않는 연습을 해봄', '이직 준비 중인 포토폴리오 느낌으로 내용을 꾸밈', ], 
-         url: 'https://minji-baek.github.io/kakaoBank-page-clone/' }
-       
-        ,{ title: 'Next-level-page', date:[ '202305', '202305'], Languege: ['Javascript', 'HTML', 'CSS'], 
-        detail: ['독학하여 만들어보는 Toy Project', '터득한 animation, parallax-scrolling, css를 활용하고 또 다른 기법들을 사용한 interactive page', 'scrolling 뿐만 아니라 mouse move와 object들 간의 parallax 기법도 활용하여 더욱 활용도 높은 기능의 기반이 될 것' ] ,
-        url: 'https://minji-baek.github.io/next-level-page/' }
-       
-        ,{ title: 'Flying-Bird', date:[ '202306', '202306'], Languege: ['Javascript', 'HTML', 'CSS'], 
-        detail: ['독학하여 만들어보는 Toy Project', 'Canvas를 활용하여 mouse click event 만으로 간단한 2D game 을 만들었다.', 'tiled라는 programe 통해 직접 tile asset을 만들어 보고 illustrator로 직접 제목 png를 만듬', 'click이 아닌 holding 방식으로 또 다른 게임을 만들어 보고 싶음', ],
-        url: 'https://minji-baek.github.io/mouse-click-game/' }
-       ]
-       break;
+        { title: 'KakakoBank Clone', date:[ '202305', '202305'], Languege: ['Javascript', 'HTML', 'CSS'],
+        img: 'cloneKakao.png',
+        company: ['Alone'],
+        subtitle: 'https://minji-baek.github.io/kakaoBank-page-clone/',
+        detail: ['독학하여 만들어보는 Toy Project', 'KakakoBank Clone Base', '이직 준비 중인 포토폴리오 느낌으로 내용을 꾸밈'],
+        pitch: [ '자주 사용되는 slider library도 직접 만들어보며 libaray에 의존하지 않는 연습을 해봄','자주 사용되는 design cloning' ],
+        role: ['Site 개발', '테스트', '배포 완료']}
+
+      ,{ title: 'Next-level-page', date:[ '202305', '202305'], Languege: ['Javascript', 'HTML', 'CSS'], 
+        company: ['Alone'], img: 'activePage.png',
+        subtitle: 'https://minji-baek.github.io/next-level-page/',
+        detail: ['독학하여 만들어보는 Toy Project', '터득한 animation, parallax-scrolling, css를 활용하고 또 다른 기법들을 사용한 interactive page'],
+        pitch: ['자주 사용되는 design cloning' , 'scrolling 뿐만 아니라 mouse move와 object들 간의 parallax 기법도 활용하여 더욱 활용도 높은 기능의 기반이 될 것' ],
+        role: ['Site 개발', '테스트', '배포 완료']}
+
+      ,{ title: 'Flying-Bird', date:[ '202306', '202306'], Languege: ['Javascript', 'HTML', 'CSS'], 
+        company: ['Alone'], img: '2Dgame.png',
+        subtitle: 'https://minji-baek.github.io/mouse-click-game/',
+        detail: ['독학하여 만들어보는 Toy Project', 'Canvas를 활용하여 mouse click event 만으로 만든 간단한 2D game'],
+        pitch: ['tiled라는 programe 통해 직접 tile asset을 만들어 보고 illustrator로 직접 제목 png를 만듬' ],
+        role: ['Site 개발', '테스트', '배포 완료']}
+
+      ,{ title: 'Canvas-Portfolio', date:[ '202306', '202306'], Languege: ['React', 'HTML', 'CSS', 'Jsx'], 
+        company: ['Alone'], img: 'cloneKakao.png',
+        subtitle: 'https://minji-baek.github.io/canvas-practice-projects/',
+        detail: ['독학하여 만들어보는 Toy Project', 'Canvas, React, Matter.js를 활용하여 2D Portpolio 를 개발'],
+        pitch: ['상단의 erasing 형식의 사진 show', '하단의 CountDown, firework, confetti 등 2d effect', '중단의 matter.js 물리엔진 구현' ],
+        role: ['Site 개발', '테스트', '배포 완료']}
+        ]
+        break;
       }
     }
   }

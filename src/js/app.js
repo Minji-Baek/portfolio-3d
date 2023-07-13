@@ -10,6 +10,7 @@ import {FontLoader} from 'three/examples/jsm/loaders/FontLoader';
 import gsap from 'gsap';
 import {ScrollTrigger} from 'gsap/ScrollTrigger';
 import Description from './models/Description';
+import { SEventEmitter } from './utils/EventEmitter';
 
 
 export default async function init () {
@@ -17,6 +18,7 @@ export default async function init () {
   const container = document.querySelector('#scroll');
   gsap.registerPlugin(ScrollTrigger); // scrollTrigger을 사용할수있음
   const canvas = document.querySelector('#canvas');
+  const eventEmitter = SEventEmitter;
 
   // const loadingManger = new THREE.LoadingManager();
   // loadingManger.onProgress = (url, loaded, total) => {
@@ -61,6 +63,7 @@ export default async function init () {
   controls.maxPolarAngle = Math.PI ;
   controls.enableZoom = false;
   controls.enablePan = false;
+  // controls.enabled = false;
 
   controls.dampingFactor = 0.1;
   controls.saveState();
@@ -77,7 +80,6 @@ export default async function init () {
     smoothChildTiming: true,
     autoRemoveChildren: true,
   });
-  let needRefresh = false;
   let frameId = '';
 
   const create = (gui) => {
@@ -93,9 +95,7 @@ export default async function init () {
       
     };
     planetGroup.rotation.set(4.733, 2.702, 0.49 );
-    // gui.add(camera.position, 'x' , -10, 10, 0.01);
-    // gui.add(camera.position, 'y' , -10, 10, 0.01);
-    // gui.add(camera.position, 'z' , -10, 10, 0.01);
+
     scene.add(planetGroup);
    
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
@@ -104,7 +104,6 @@ export default async function init () {
 
     vecArry = plantArry.flatMap((arr, index)=>{
       const div = document.createElement('div');
-      // div.innerText = 'Please Double-Click If you want see more info about it'
       div.className = 'scroll-planet';
       div.id = `planet-${index}`;
       container.appendChild(div);
@@ -113,7 +112,7 @@ export default async function init () {
 
     
     return {
-      planetGroup, plantArry
+      plantArry
     }
   }
   const resize = () => {
@@ -125,6 +124,9 @@ export default async function init () {
 
     renderer.setSize(canvasSize.width, canvasSize.height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    document.querySelector("#planet-0").scrollIntoView({
+      behavior: 'smooth'
+    })
   };
 
   function handlerPointerMove(event, plantArry) {
@@ -137,13 +139,12 @@ export default async function init () {
     if(intersects.length > 0){
       const object = intersects[0].object;
       // console.log(object)
-        if(object.name === 'skeletone' || object.name === 'cube'){
+      if(object.parent.name === 'planet'){
           const selectArr =  plantArry.filter((arry) => {return arry.planet.id === object.parent.id} );
           selectArr[0].animation('big'); //animation
 
           const changeArr = changeObjArry.filter((obj)=> { return obj.parent.id === object.parent.id});
-          if(changeArr.length > 0){ //같은게 있는 상황
-            // console.log("중복")
+          if(changeArr.length > 0){ //중복
             return;
           }
           //같은게 없어서 array에 넣음
@@ -151,7 +152,7 @@ export default async function init () {
         }
 
     }else if(changeObjArry.length > 0 ){
-      // console.log("나갈때 여기 아니냐",changeObjArry )//작아지는거
+      //작아지는거
       changeObjArry = [];
       plantArry.forEach( arr=>{
         if(!arr.isClick){
@@ -166,19 +167,19 @@ export default async function init () {
   }
 
   function handlerPointerDown (event, plantArry) {
-
     const intersects = raycatster.intersectObjects(scene.children);
 
-    if(intersects.length > 0  && !clickAni.isActive()){
+    if(intersects.length > 0){
       const object = intersects[0].object;
-        if(object.name === 'skeletone' || object.name === 'cube'){
+      console.log("object",object)
+        if(object.parent.name === 'planet'){
           controls.reset();
           let repeatCount = (object.userData.index -3);
           if(repeatCount < 0){
             repeatCount = repeatCount + plantArry.length;
           }
           // 현재 보이는 index랑 click한 index와의 차이 == i
-          console.log("isClick")
+          console.log("isClick", repeatCount)
           const selectArr = plantArry.filter((arry) => {return arry.planet.id === object.parent.id} );
           if(selectArr[0].isClick){
             return;
@@ -190,7 +191,7 @@ export default async function init () {
           document.querySelector('#warning-click').setAttribute('class','show');
         }
     }else{
-      
+      //빈곳 click 시 선택 풀림
       reset(plantArry);
     }  
   }
@@ -224,81 +225,76 @@ export default async function init () {
             y: vec.y,
             z: vec.z,
             duration: 3,
+            onStart: () =>{
+              controls.reset();
+              // reset(plantArry);
+            }
           }, '<')
       });
     }
   }
 
   const reset = (plantArry)=> {
+    //컨트롤 reset, clickwarning no show, planet isclik all false, 
     document.querySelector('#warning-click').removeAttribute('class','show');
     plantArry.forEach( arr=>{ arr.animation('small'); arr.isClick = false;}) //animation
   }
 
-  function handlerClickDouble (event , plantArry) {  
+  function handlerClickDouble (plantArry) {  
+    //double click => show description
     const intersects = raycatster.intersectObjects(scene.children);
-
     if(intersects.length > 0  && !clickAni.isActive()){
       const object = intersects[0].object;
-        if(object.name === 'skeletone' || object.name === 'cube'){
-          
-          console.log(plantArry[object.userData.index]);
-
+        if(object.parent.name === 'planet'){
+          let showIndex = (object.userData.index -3);
+          if(showIndex < 0){
+            showIndex = showIndex + plantArry.length;
+          }
           gsap.to(controls.object.position,{
             x: 0.13,
             z: 3.2,
             duration: 2,
             onComplete: ()=>{
-              openDescription(object.userData.index);
+              openDescription(object.userData.index, showIndex);
             }
           })
-          console.log("dbclick");
         }
-    }else{
-      
     }
   }
  
-  const handlerWheel = (plantArry) => {
-    console.log("wheel이 돌아갑니다")
-    reset(plantArry);
-  } 
 
-  const openDescription = (index) => {
+  const openDescription = (index, showIndex) => {
+    //설명  html 켜지는 부분
     document.querySelector('#warning-click').removeAttribute('class','show');
 
-    document.querySelector('#canvas').setAttribute('class', 'disable');
-    document.querySelector('#scroll').setAttribute('class', 'disable');
+
     document.querySelector('header').setAttribute('class', 'disable');
-    console.log(data.data[index]);
 
-    const description = new Description(data.data[index], index);
-    needRefresh = description.setDescriptionEle();
+    const description = Description(data.data[index], showIndex);
     
-    window.removeEventListener('wheel',handlerWheel);
-    // cancelAnimationFrame(frameId);
+    // document.querySelector('#canvas').setAttribute('class', 'disable');
+    document.querySelector('#scroll').setAttribute('class', 'disable');
+   
+    cancelAnimationFrame(frameId);
 
-    console.log(data.data[index], needRefresh);
+    // console.log(data.data[index]);
   }
 
   const addEvent = (obj) => {
-    const {  planetGroup, plantArry  } = obj;   
+    const { plantArry  } = obj;   
     window.addEventListener('resize', resize);
     addScrollEvent(plantArry);
 
     canvas.addEventListener('pointermove',(event) =>  handlerPointerMove(event, plantArry));
-
-    window.addEventListener('mouseup',()=>{
-      if(needRefresh){
-          setTimeout(() => {
-          setCanvasRefresh(plantArry);
-          needRefresh = false;
-        }, 2.0*1000);
-      }
-    } )
+    eventEmitter.onClearDescription((index)=>{ 
+      document.querySelector('#warning-click').setAttribute('class','show');
+      document.querySelector('#scroll').removeAttribute('class', 'disable');
+      document.querySelector('header').removeAttribute('class', 'disable');
+      setCanvasRefresh(plantArry, index);
+    })
 
     canvas.addEventListener('pointerdown',(event) =>  handlerPointerDown(event, plantArry));
-    canvas.addEventListener('dblclick', (event) => handlerClickDouble(event, plantArry));
-    window.addEventListener('wheel', handlerWheel(plantArry));
+    canvas.addEventListener('dblclick', () => handlerClickDouble(plantArry));
 
     const home = document.querySelector('#home');
     home.addEventListener('click', (event) =>{
@@ -317,20 +313,18 @@ export default async function init () {
 
   };
 
-  const setCanvasRefresh = (plantArry) => {
-    window.addEventListener('wheel', handlerWheel(plantArry));
-
-    document.querySelector('#warning-click').setAttribute('class','show');
-
-    document.querySelector('#canvas').removeAttribute('class', 'disable');
-    document.querySelector('#scroll').removeAttribute('class', 'disable');
-    document.querySelector('header').removeAttribute('class', 'disable');
+  const setCanvasRefresh = (plantArry, index) => {
+    
+    gsap.to(controls.object.position,{
+      x: controls.position0.x,
+      y: controls.position0.y,
+      z: controls.position0.z,
+      duration: 2,
+      onStart: () => {
+        document.querySelector(`#planet-${index}`).scrollIntoView();
+      }
+    });
     draw({plantArry});
-    controls.reset();
-    reset(plantArry);
-    document.querySelector("#planet-0").scrollIntoView({
-      behavior: 'smooth'
-    })
   }
  
 

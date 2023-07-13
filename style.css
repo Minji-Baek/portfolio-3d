@@ -66,6 +66,7 @@ html, body {
 
 .disable{
   display: none ;
+  pointer-events: none;
 }
 
 #canvas {
@@ -149,11 +150,13 @@ header{
 #warning-click{
   position: fixed;
   display: none;
+  pointer-events: none;
 }
 
-#warning-scroll{
+#warning-button{
   position: fixed;
   display: none;
+  pointer-events: none;
 }
 
 .show{
@@ -166,6 +169,8 @@ header{
   color: #cccccc;
   z-index: 2;
   animation: twinke 2s infinite;
+  pointer-events: none;
+  z-index: 10;
 }
 
 @keyframes twinke {

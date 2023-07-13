@@ -47,7 +47,8 @@ export default class Planet {
     const createPlane = () => {
       const geometry = new THREE.PlaneGeometry(cubeR, cubeR * 0.75, 10, 10);
       const material = new THREE.MeshBasicMaterial({
-        map: texture ,
+        map: texture,
+        transparent: false
       });
       const mesh = new THREE.Mesh(geometry, material);
       mesh.name = 'picture';
@@ -98,6 +99,7 @@ export default class Planet {
     this.titleText.visible = false;
 
     this.planet = new THREE.Group();
+    this.planet.name = 'planet';
     this.planet.userData = {
       dataIndex : this.index,
     }

@@ -81,7 +81,7 @@ export default class Data {
         role: ['Site 개발', '테스트', '배포 완료']}
 
       ,{ title: 'Canvas-Portfolio', date:[ '202306', '202306'], Languege: ['React', 'HTML', 'CSS', 'Jsx'], 
-        company: ['Alone'], img: 'cloneKakao.png',
+        company: ['Alone'], img: 'CanvasVerportfolio.png',
         subtitle: 'https://minji-baek.github.io/canvas-practice-projects/',
         detail: ['독학하여 만들어보는 Toy Project', 'Canvas, React, Matter.js를 활용하여 2D Portpolio 를 개발'],
         pitch: ['상단의 erasing 형식의 사진 show', '하단의 CountDown, firework, confetti 등 2d effect', '중단의 matter.js 물리엔진 구현' ],

@@ -3,13 +3,22 @@ import EventEmitter3 from 'eventemitter3';
 export class EventEmitter {
   eventEmitter = new EventEmitter3();
 
-  clearDescription(index){
-    this.eventEmitter.emit('clearDescription', index);
+  clearCarrerDescription(index){
+    this.eventEmitter.emit('clearCarrerDescription', index);
   }
 
-  onClearDescription(callBackFunc) {
-    this.eventEmitter.on('clearDescription', callBackFunc);
+  onClearCarrerDescription(callBackFunc) {
+    this.eventEmitter.on('clearCarrerDescription', callBackFunc);
   }
+
+  clearProDescription(index){
+    this.eventEmitter.emit('clearProDescription', index);
+  }
+
+  onClearProDescription(callBackFunc) {
+    this.eventEmitter.on('clearProDescription', callBackFunc);
+  }
+
 
   initProject(){
     this.eventEmitter.emit('initProject');
@@ -27,6 +36,7 @@ export class EventEmitter {
   onDestroyProject(callBackFunc) {
     this.eventEmitter.on('destroyProject', callBackFunc);
   }
+  
 
   initCarrer(){
     this.eventEmitter.emit('initCarrer');

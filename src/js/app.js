@@ -1,4 +1,4 @@
-import Carrer from "./Carrer";
+import Carrer from "./Carrer.js";
 import Project from "./Project";
 import { SEventEmitter } from "./utils/EventEmitter";
 
@@ -17,11 +17,11 @@ export default function () {
           if (element.textContent === "CARRER"){
             eventEmitter.destroyCarrer();
             eventEmitter.initProject();
-            element.textContent === "PROJECT"
+            element.textContent = "PROJECT"
           }else{
             eventEmitter.destroyProject();
             eventEmitter.initCarrer();
-            element.textContent === "CARRER"
+            element.textContent = "CARRER"
           }
           console.log("carrer click");
           break;
@@ -41,7 +41,8 @@ export default function () {
   });
 
   window.addEventListener('load',()=>{
-    eventEmitter.initProject();
+    console.log("????????????")
+    eventEmitter.initCarrer();
   })
 }
 

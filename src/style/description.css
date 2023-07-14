@@ -11,6 +11,20 @@
   z-index: 3;
   /* 두줄 한번 해보고 바꾸기 */
 }
+
+.description2{
+  animation: slideHtmlUp 1s normal;
+  color: #dddddd;
+  background-color: #313131;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  line-height: 0.9;
+  z-index: 3;
+  /* 두줄 한번 해보고 바꾸기 */
+}
 .description-button-wrapper{
   display: flex;
   justify-content: right;
@@ -126,6 +140,20 @@
 
 .description-end{
   animation: zoomOutHtml 1s normal;
+  color: #dddddd;
+  background-color: #313131;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  line-height: 0.9;
+  z-index: 3;
+
+}
+
+.description-end2{
+  animation: slideHtmlDown 1s normal;
   color: #dddddd;
   background-color: #313131;
   display: flex;

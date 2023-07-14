@@ -210,7 +210,7 @@ export default async function Carrer() {
             start: 'top top', // 언제 어딜 지나면 시작할지
             end: 'bottom top', 
             ariaLabel: `#${container.children[i].id}`,
-            markers: true,
+            // markers: true,
             scrub: true, //바로바뀜이 아니라 지정만큼 천천히
           },
         });
@@ -274,7 +274,7 @@ export default async function Carrer() {
 
     document.querySelector('header').setAttribute('class', 'disable');
 
-    const description = Description(data.data[index], showIndex);
+    const description = Description(data.data[index], showIndex, 'carrer');
     
     // document.querySelector('#canvas').setAttribute('class', 'disable');
     document.querySelector('#scroll').setAttribute('class', 'disable');
@@ -290,7 +290,7 @@ export default async function Carrer() {
     addScrollEvent(plantArry);
 
     canvas.addEventListener('pointermove',(event) =>  handlerPointerMove(event, plantArry));
-    eventEmitter.onClearDescription((index)=>{ 
+    eventEmitter.onClearCarrerDescription((index)=>{ 
       document.querySelector('#warning-click').setAttribute('class','show');
       document.querySelector('#scroll').removeAttribute('class', 'disable');
       document.querySelector('header').removeAttribute('class', 'disable');
@@ -340,7 +340,7 @@ export default async function Carrer() {
 
   const initialize = async () => {
     const gui = new GUI();
-    // gui.hide();
+    gui.hide();
     // container.appendChild(renderer.domElement);
     const obj = create(gui);
     addEvent(obj);
@@ -353,6 +353,13 @@ export default async function Carrer() {
     cancelAnimationFrame(frameId);
     renderer.dispose();
     controls.dispose();
+    const home = document.querySelector('#home');
+    home.removeEventListener('click', (event) =>{
+      reset(plantArry);
+      document.querySelector("#planet-0").scrollIntoView({
+        behavior: 'smooth'
+      })
+    });
   });
 
   await initialize();

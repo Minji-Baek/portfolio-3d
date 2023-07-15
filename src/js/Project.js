@@ -13,7 +13,7 @@ import Heart from './models/Heart';
 import Wave from './models/Wave';
 
 
-export default async function Project (type) {
+export default async function Project () {
   const eventEmitter = SEventEmitter;
   const container = document.querySelector('#scroll');
   gsap.registerPlugin(ScrollTrigger); // scrollTrigger을 사용할수있음
@@ -34,7 +34,7 @@ export default async function Project (type) {
     canvas: canvas, 
   });
 
-  renderer.setClearColor(0x333333, 1);
+  renderer.setClearColor(0xffffff, 1);
   renderer.shadowMap.enabled = true;
   const canvasSize = {
     width: window.innerWidth,
@@ -58,15 +58,13 @@ export default async function Project (type) {
   );
 
   camera.position.set(0, 33, 97);
-
-
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.maxAzimuthAngle = Math.PI / 2;
   controls.maxPolarAngle = Math.PI ;
-  // controls.enableZoom = false;
+  controls.enableZoom = false;
   controls.enablePan = false;
-  // controls.enabled = false;
+  controls.enabled = false;
 
   controls.dampingFactor = 0.1;
   controls.saveState();
@@ -77,7 +75,6 @@ export default async function Project (type) {
   const font =  await fontLoader.loadAsync('../../assets/fonts/Gugi_Regular.json');
 
   let changeObjArry = [];
-  let vecArry = [];
   const clickAni = gsap.timeline({
     id: 'click',
     smoothChildTiming: true,
@@ -98,6 +95,8 @@ export default async function Project (type) {
   const create = (gui) => {
     // const earth = new Earth({ baseR: 0.8, glowR: 1, texture: textureLoader.load('../../assets/2k_earth_specular_map.png')});
     const planetGroup = new THREE.Group();
+    planetGroup.name = 'renderPlanet';
+    const heartGroup = new THREE.Group();
     const wave = new Wave({ params : params })
 
     scene.add(wave.wave, wave.image);
@@ -106,20 +105,17 @@ export default async function Project (type) {
     let plantArry = [];
    
     for (let i = count; i <= 360; i += count) {
-      console.log(data.data[i/count - 1].img)
-
-      let planetG = new Heart({index: i, font: font, data: data    });
-        console.log(planetG.planet.position)
-        planetGroup.name = 'renderPlanet';
-        planetGroup.add( planetG.planet, planetG.numberText, planetG.titleText);
+      let planetG = new Heart({index: i, font: font, data: data });
         // this.numberText.position.set( -42, -11, 58);
         // this.titleText.position.set( 35, -27, 1);
-        planetG.numberText.position.set( planetGroup.position.x , planetGroup.position.y + 100, planetGroup.position.z + 8 );
-        planetG.titleText.position.set( planetGroup.position.x + 3, planetGroup.position.y - 51,  planetGroup.position.z + 2);
+        planetG.numberText.position.set( 0,  100,  8 );
+        planetG.titleText.position.set(  3, - 51,  2);
+        planetGroup.add( planetG.numberText, planetG.titleText);
+        heartGroup.add( planetG.planet)
         plantArry.push(planetG);
-
     };
     // planetGroup.rotation.set(4.733, 2.702, 1.396 );
+    planetGroup.add(heartGroup);
     planetGroup.rotation.x = - Math.PI / 3;
 
     scene.add(planetGroup);
@@ -141,20 +137,9 @@ export default async function Project (type) {
   
     directionalLight.position.set(-15, 15, 15);
     scene.add(directionalLight);
-
-
-
-    vecArry = plantArry.flatMap((arr, index)=>{
-      const div = document.createElement('div');
-      div.className = 'scroll-planet';
-      div.id = `planet-${index}`;
-      container.appendChild(div);
-      return arr.planet.position; 
-    });
-
     
     return {
-      plantArry, wave,
+      plantArry, wave, heartGroup
     }
   }
 
@@ -222,7 +207,7 @@ export default async function Project (type) {
             repeatCount = repeatCount + plantArry.length;
           }
           // 현재 보이는 index랑 click한 index와의 차이 == i
-          console.log("isClick", repeatCount)
+          // console.log("isClick", repeatCount)
           const selectArr = plantArry.filter((arry) => {return arry.planet.id === object.parent.id} );
           if(selectArr[0].isClick){
             return;
@@ -252,14 +237,15 @@ export default async function Project (type) {
     plantArry.forEach( arr=>{ arr.animation('small'); arr.heartAnime(); wave.animation(); arr.isClick = false;}) //animation
   }
 
-  function handlerClickDouble (wave) {  
+  function handlerClickDouble (wave, heartGroup) {  
     //double click => show description
     const intersects = raycatster.intersectObjects(scene.children);
     if(intersects.length > 0  && !clickAni.isActive()){
       const object = intersects[0].object;
         if(object.parent.name === 'planet'){
           gsap.to(controls.object.position,{
-            z: 3,
+            y: 25.67,
+            z:  16.59,
             duration: 2,
             onStart:()=>{
               wave.animation('small');  
@@ -269,6 +255,10 @@ export default async function Project (type) {
               openDescription(object.userData.index, object.userData.index);
             }
           },'<')
+          gsap.to(heartGroup.rotation,{
+            z:  Math.PI * 4,
+            duration: 2,
+          },'<')
         }
     }
   }
@@ -277,40 +267,20 @@ export default async function Project (type) {
   const openDescription = (index, showIndex) => {
     //설명  html 켜지는 부분
     document.querySelector('#warning-click').removeAttribute('class','show');
-
-
     document.querySelector('header').setAttribute('class', 'disable');
-
     const description = Description(data.data[index], showIndex, 'project');
-    
     document.querySelector('#scroll').setAttribute('class', 'disable');
-   
     cancelAnimationFrame(frameId);
     // document.querySelector('#canvas').setAttribute('class', 'disable');
-
     // console.log(data.data[index]);
   }
 
-  const addEvent = (obj) => {
-    const { plantArry, wave  } = obj;   
-    window.addEventListener('resize', resize);
-    // addScrollEvent(plantArry, wave);
-    canvas.addEventListener('pointermove',(event) =>  handlerPointerMove(event, plantArry, wave));
-
-    eventEmitter.onClearProDescription((index)=>{ 
-      document.querySelector('#warning-click').setAttribute('class','show');
-      document.querySelector('#scroll').removeAttribute('class', 'disable');
-      document.querySelector('header').removeAttribute('class', 'disable');
-      setCanvasRefresh(obj, index);
-    })
-
-    canvas.addEventListener('pointerdown',(event) =>  handlerPointerDown(event, plantArry, wave));
-    canvas.addEventListener('dblclick', () => handlerClickDouble(wave));
-
-  };
-
-  const setCanvasRefresh = (obj, index) => {
-    
+  const setCanvasRefresh = (obj) => {
+    draw(obj);
+    gsap.to(obj.heartGroup.rotation,{
+      z: - Math.PI * 4,
+      duration: 2,
+    },'<');
     gsap.to(controls.object.position,{
       x: controls.position0.x,
       y: controls.position0.y,
@@ -319,13 +289,34 @@ export default async function Project (type) {
       onComplete: ()=>{
         obj.wave.animation('hover', params);
       }
-    });
-    draw(obj);
+    },'<')
+   
+
   }
+
+  const addEvent = (obj) => {
+    const { plantArry, wave, heartGroup  } = obj;   
+    window.addEventListener('resize', resize);
+    // addScrollEvent(plantArry, wave);
+    canvas.addEventListener('pointermove',(event) =>  handlerPointerMove(event, plantArry, wave));
+
+    eventEmitter.onClearProDescription(()=>{ 
+      document.querySelector('#warning-click').setAttribute('class','show');
+      document.querySelector('#scroll').removeAttribute('class', 'disable');
+      document.querySelector('header').removeAttribute('class', 'disable');
+      setCanvasRefresh(obj);
+    })
+
+    canvas.addEventListener('pointerdown',(event) =>  handlerPointerDown(event, plantArry, wave));
+    canvas.addEventListener('dblclick', () => handlerClickDouble(wave, heartGroup));
+
+  };
+
+
  
 
   const draw = (obj) => {
-    const { plantArry, wave  } = obj;   
+    const { plantArry, wave, heartGroup  } = obj;   
    
     // earth.update(controls, clock.getElapsedTime());
     plantArry.forEach(planet => planet.update(clock.getElapsedTime()))
@@ -341,7 +332,9 @@ export default async function Project (type) {
    
     gui.hide();
     // container.appendChild(renderer.domElement);
-
+    gui.add(controls.object.position, 'x', -1000, 1000, 0.01);
+    gui.add(controls.object.position, 'y', -1000, 1000, 0.01);
+    gui.add(controls.object.position, 'z', -1000, 1000, 0.01);
     const obj = create(gui);    
 
     addEvent(obj);

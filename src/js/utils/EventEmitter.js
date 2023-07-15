@@ -11,8 +11,8 @@ export class EventEmitter {
     this.eventEmitter.on('clearCarrerDescription', callBackFunc);
   }
 
-  clearProDescription(index){
-    this.eventEmitter.emit('clearProDescription', index);
+  clearProDescription(){
+    this.eventEmitter.emit('clearProDescription');
   }
 
   onClearProDescription(callBackFunc) {
@@ -65,12 +65,28 @@ export class EventEmitter {
     this.eventEmitter.on('initToy', callBackFunc);
   }
 
+  destroyToy(){
+    this.eventEmitter.emit('destroyToy');
+  }
+
+  onDestroyToy(callBackFunc) {
+    this.eventEmitter.on('destroyToy', callBackFunc);
+  }
+
   initAbout(){
     this.eventEmitter.emit('initAbout');
   }
 
   onInitAbout(callBackFunc) {
     this.eventEmitter.on('initAbout', callBackFunc);
+  }
+
+  destroyAbout(){
+    this.eventEmitter.emit('destroyAbout');
+  }
+
+  onDestroyAbout(callBackFunc) {
+    this.eventEmitter.on('destroyAbout', callBackFunc);
   }
 }
 

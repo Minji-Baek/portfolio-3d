@@ -73,18 +73,11 @@ export default class Heart {
     this.heart.scale.set(3, 3, 3);
 
     this.numberText = createText((this.index+1).toString());
-    console.log(this.data.data[this.index].title)
     this.titleText = createText(this.data.data[this.index].title);
-    // this.titleText.scale.set(0.1, 0.1, 0.1);
 
     this.numberText.scale.set(0, 0, 0);
     this.titleText.scale.set(0, 0, 0);
-    // this.numberText.getWorldPosition(new THREE.Vector3(-42, -11, 58));
-    // this.titleText.getWorldPosition(new THREE.Vector3(35, -27, 1));
-    // this.numberText.position.set( -42, -11, 58);
-    // this.titleText.position.set( 35, -27, 1);
 
-    // this.titleText.rotation.set(2.081, -0.655, 2.928);
     this.numberText.rotation.set(0.89, 0, 0);
 
     this.numberText.visible = false;

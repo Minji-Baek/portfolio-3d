@@ -29,7 +29,7 @@ export default class Data {
             pitch: ['vuetify로 대중적인 디자인 구성','얼굴 인증 사진 data 조회',],
             role: [ '리뉴얼 화면 기획 및 기획서 작성', '개발, 테스트, 배포 완료']}
           
-        ,{  title: 'Active UI', img: 'companion.jpg',
+        ,{  title: 'Active UI', img: 'companion.png',
             company: ['Samsung S1','Companion System'],
             date:[ '202009', '202011'], Languege: ['TypeScript'], UIFrameWork: ['Vue2.X', 'devextreame'], //1등으로 나옴
             detail: ['Samsung 에스원 파견 Project','회사 고유 UI Framework 솔루션',],

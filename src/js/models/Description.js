@@ -54,17 +54,19 @@ const Description = (data, index, type) => {
 
   const setCloseDescriptionEle = (event) => {
     if(!event) return;
+    
     if(type === 'carrer'){  
       document.querySelector('#description').removeAttribute('class', 'description-end');
     }else{
       document.querySelector('#description').removeAttribute('class', 'description-end2');
     }
+
     document.querySelector('#description').setAttribute('class', 'disable');
     if(type === 'carrer'){
       eventEmitter.clearCarrerDescription(index);
     }
     else{
-      eventEmitter.clearProDescription(index);
+      eventEmitter.clearProDescription();
     }
   }
 

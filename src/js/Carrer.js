@@ -49,7 +49,7 @@ export default async function Carrer() {
   // const fontLoader = new FontLoader(loadingManger);
   const fontLoader = new FontLoader();
 
-  projectTextureLoader.setPath('../../assets/projects/');
+  projectTextureLoader.setPath('./assets/projects/');
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(
@@ -74,7 +74,7 @@ export default async function Carrer() {
   const raycatster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   const data = new Data({about: 'carrer'});
-  const font =  await fontLoader.loadAsync('../../assets/fonts/Gugi_Regular.json');
+  const font =  await fontLoader.loadAsync('./assets/fonts/Gugi_Regular.json');
 
   let changeObjArry = [];
   let vecArry = [];

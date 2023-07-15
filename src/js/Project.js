@@ -45,7 +45,7 @@ export default async function Project () {
   // const fontLoader = new FontLoader(loadingManger);
   const fontLoader = new FontLoader();
 
-  projectTextureLoader.setPath('../../assets/projects/');
+  projectTextureLoader.setPath('./assets/projects/');
 
   const scene = new THREE.Scene();
   scene.fog = new THREE.Fog(0xf0f0f0, 0.1, 500);
@@ -72,7 +72,7 @@ export default async function Project () {
   const raycatster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   const data = new Data({about: 'project'});
-  const font =  await fontLoader.loadAsync('../../assets/fonts/Gugi_Regular.json');
+  const font =  await fontLoader.loadAsync('./assets/fonts/Gugi_Regular.json');
 
   let changeObjArry = [];
   const clickAni = gsap.timeline({

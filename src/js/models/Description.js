@@ -1,7 +1,7 @@
 import { SEventEmitter } from "../utils/EventEmitter.js";
 
 const Description = (data, index, type) => {
-  console.log(data);
+  // console.log(data);
   const setDate = (date)=>{
     const startYYYY = date[0].slice(0,4);
     const startDD = date[0].slice(4,6);
@@ -23,7 +23,20 @@ const Description = (data, index, type) => {
   document.querySelector('.description-title #title').textContent = data.title;
 
   if(data.subtitle){
-    document.querySelector('.description-title #subtitle').textContent = data.subtitle
+    document.querySelector('.description-title #subtitle').textContent = data.subtitle;
+  }else if(data.url){
+    // document.querySelector('.description-title #subtitle').textContent = data.url;
+    // document.querySelector('.description-title #subtitle').setAttribute('href', data.url);
+
+    // document.querySelector('.description-title #subtitle').setAttribute('href', data.url);
+    const aTag = document.createElement("a");
+    aTag.setAttribute('href', data.url);
+    aTag.setAttribute('target', "_blank");
+    aTag.textContent = data.url;
+
+    // aTag.setAttribute('textContent', data.url);
+
+    document.querySelector('.description-title #subtitle').appendChild(aTag);
   }
   
   document.querySelector('.description-title-wrapper #description').textContent = data.detail.join(`\r\n `);

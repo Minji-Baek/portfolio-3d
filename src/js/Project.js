@@ -6,7 +6,6 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import Data from './data/data';
 import {FontLoader} from 'three/addons/loaders/FontLoader';
 import gsap from 'gsap';
-import {ScrollTrigger} from 'gsap/ScrollTrigger';
 import Description from './models/Description';
 import { SEventEmitter } from './utils/EventEmitter';
 import Heart from './models/Heart';
@@ -15,8 +14,6 @@ import Wave from './models/Wave';
 
 export default async function Project () {
   const eventEmitter = SEventEmitter;
-  const container = document.querySelector('#scroll');
-  gsap.registerPlugin(ScrollTrigger); // scrollTrigger을 사용할수있음
   const canvas = document.querySelector('#canvas');
   // const gui = new GUI();
   // const loadingManger = new THREE.LoadingManager();
@@ -90,7 +87,6 @@ export default async function Project () {
     texture: projectTextureLoader.load(data.data[0].img),
     fogColor : '#f0f0f0',
   }
-  // scene.background = params.backgroundColor;
 
   const create = () => {
     // const earth = new Earth({ baseR: 0.8, glowR: 1, texture: textureLoader.load('../../assets/2k_earth_specular_map.png')});

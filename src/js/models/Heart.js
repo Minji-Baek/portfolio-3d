@@ -54,9 +54,9 @@ export default class Heart {
         size: 0.5,
         height: 0.1,
         bevelEnabled: true,
-        bevelSegments: 5,
-        bevelSize: 0.01,
-        bevelThickness: 0.02
+        bevelSegments: 10,
+        bevelSize: 0.025,
+        bevelThickness: 0.04
       });
       textGeometry.computeBoundingBox(); //boundingbox의 값 계산하는 함수, 그 전엔 값 안나옴
       textGeometry.center();

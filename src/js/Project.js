@@ -2,7 +2,7 @@
 
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+// import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import Data from './data/data';
 import {FontLoader} from 'three/addons/loaders/FontLoader';
 import gsap from 'gsap';
@@ -18,7 +18,7 @@ export default async function Project () {
   const container = document.querySelector('#scroll');
   gsap.registerPlugin(ScrollTrigger); // scrollTrigger을 사용할수있음
   const canvas = document.querySelector('#canvas');
-  const gui = new GUI();
+  // const gui = new GUI();
   // const loadingManger = new THREE.LoadingManager();
   // loadingManger.onProgress = (url, loaded, total) => {
   //   //총량: total, 진행상태: loaded
@@ -92,7 +92,7 @@ export default async function Project () {
   }
   // scene.background = params.backgroundColor;
 
-  const create = (gui) => {
+  const create = () => {
     // const earth = new Earth({ baseR: 0.8, glowR: 1, texture: textureLoader.load('../../assets/2k_earth_specular_map.png')});
     const planetGroup = new THREE.Group();
     planetGroup.name = 'renderPlanet';
@@ -330,12 +330,12 @@ export default async function Project () {
 
   const initialize = async () => {
    
-    gui.hide();
-    // container.appendChild(renderer.domElement);
-    gui.add(controls.object.position, 'x', -1000, 1000, 0.01);
-    gui.add(controls.object.position, 'y', -1000, 1000, 0.01);
-    gui.add(controls.object.position, 'z', -1000, 1000, 0.01);
-    const obj = create(gui);    
+    // gui.hide();
+    // // container.appendChild(renderer.domElement);
+    // gui.add(controls.object.position, 'x', -1000, 1000, 0.01);
+    // gui.add(controls.object.position, 'y', -1000, 1000, 0.01);
+    // gui.add(controls.object.position, 'z', -1000, 1000, 0.01);
+    const obj = create();    
 
     addEvent(obj);
     resize();

@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import Earth from './models/Earth.js';
 import Planet from './models/Planet.js';
-import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+// import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import Data from './data/data.js';
 import {FontLoader} from 'three/addons/loaders/FontLoader';
 import gsap from 'gsap';
@@ -85,7 +85,7 @@ export default async function Carrer() {
   });
   let frameId = '';
 
-  const create = (gui) => {
+  const create = () => {
     // const earth = new Earth({ baseR: 0.8, glowR: 1, texture: textureLoader.load('../../assets/2k_earth_specular_map.png')});
     const planetGroup = new THREE.Group();
 
@@ -175,7 +175,7 @@ export default async function Carrer() {
 
     if(intersects.length > 0){
       const object = intersects[0].object;
-      console.log("object",object)
+      // console.log("object",object)
         if(object.parent.name === 'planet'){
           controls.reset();
           let repeatCount = (object.userData.index -3);
@@ -183,7 +183,7 @@ export default async function Carrer() {
             repeatCount = repeatCount + plantArry.length;
           }
           // 현재 보이는 index랑 click한 index와의 차이 == i
-          console.log("isClick", repeatCount)
+          // console.log("isClick", repeatCount)
           const selectArr = plantArry.filter((arry) => {return arry.planet.id === object.parent.id} );
           if(selectArr[0].isClick){
             return;
@@ -339,10 +339,10 @@ export default async function Carrer() {
   };
 
   const initialize = async () => {
-    const gui = new GUI();
-    gui.hide();
+    // const gui = new GUI();
+    // gui.hide();
     // container.appendChild(renderer.domElement);
-    const obj = create(gui);
+    const obj = create();
     addEvent(obj);
     resize();
     draw(obj);

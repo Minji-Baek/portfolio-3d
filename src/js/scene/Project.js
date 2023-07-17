@@ -15,6 +15,7 @@ import Wave from '../models/Wave';
 export default async function Project () {
   const eventEmitter = SEventEmitter;
   const canvas = document.querySelector('#canvas');
+  const scrollEle =  document.querySelector('#scroll');
   // const gui = new GUI();
   // const loadingManger = new THREE.LoadingManager();
   // loadingManger.onProgress = (url, loaded, total) => {
@@ -327,9 +328,13 @@ export default async function Project () {
   };
 
   const initialize = async () => {
+    if(scrollEle.hasAttribute('class')){
+      scrollEle.removeAttribute('class', 'disable');
+    }
     const obj = create();    
     addEvent(obj);
     resize();
+    console.log(scene.children)
     draw(obj);
   };
   const destroy = () => {
@@ -341,6 +346,7 @@ export default async function Project () {
 
   eventEmitter.onDestroyProject(()=>{
     document.querySelector('#warning-click').removeAttribute('class','show');
+    document.querySelector('#scroll').setAttribute('class', 'disable');
    
     destroy();
   });

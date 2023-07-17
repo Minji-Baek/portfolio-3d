@@ -1,4 +1,6 @@
 @import './src/style/description.css';
+@import './src/style/charactor.css';
+
 /* http://meyerweb.com/eric/tools/css/reset/ 
    v2.0 | 20110126
    License: none (public domain)
@@ -168,10 +170,24 @@ header{
   justify-content: center;
   text-align: center;
   color: #cccccc;
-  z-index: 2;
   animation: twinke 2s infinite;
   pointer-events: none;
   z-index: 10;
+}
+
+.earth{
+  display: flex !important;
+  width: 100%;
+  bottom: 0;
+  padding: 8vh 0;
+  position: fixed;
+  bottom: 0;
+  justify-content: center;
+  text-align: center;
+  color: #cccccc;
+  animation: twinke 2s infinite;
+  z-index: 10;
+  cursor: pointer;
 }
 
 @keyframes twinke {

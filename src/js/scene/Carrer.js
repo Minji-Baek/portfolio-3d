@@ -2,7 +2,7 @@
 
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import Earth from '../models/Earth.js';
+import Earth from '../models/knightEarth.js';
 import Planet from '../models/Planet.js';
 // import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import Data from '../data/data.js';
@@ -313,7 +313,6 @@ export default async function Carrer() {
   };
 
   const setCanvasRefresh = (index) => {
-    console.log("이게 왤케 많이 돕니까222")
     gsap.to(controls.object.position,{
       x: controls.position0.x,
       y: controls.position0.y,
@@ -340,6 +339,9 @@ export default async function Carrer() {
   };
 
   const initialize = async () => {
+    if(document.querySelector('#scroll').hasAttribute('class')){
+      document.querySelector('#scroll').removeAttribute('class', 'disable');
+    }
     const obj = create();
     addEvent(obj);
     resize();
@@ -355,7 +357,8 @@ export default async function Carrer() {
 
   eventEmitter.onDestroyCarrer(()=>{
     document.querySelector('#warning-click').removeAttribute('class','show');
-    
+    document.querySelector('#scroll').setAttribute('class', 'disable');
+
     destroy();
 
     const home = document.querySelector('#home');

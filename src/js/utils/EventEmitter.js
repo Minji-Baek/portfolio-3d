@@ -57,20 +57,54 @@ export class EventEmitter {
 
 
 
-  initToy(){
-    this.eventEmitter.emit('initToy');
+  initCard(){
+    this.eventEmitter.emit('initCard');
   }
 
-  onInitToy(callBackFunc) {
-    this.eventEmitter.on('initToy', callBackFunc);
+  onInitCard(callBackFunc) {
+    this.eventEmitter.on('initCard', callBackFunc);
   }
 
-  destroyToy(){
-    this.eventEmitter.emit('destroyToy');
+  destroyCard(){
+    this.eventEmitter.emit('destroyCard');
   }
 
-  onDestroyToy(callBackFunc) {
-    this.eventEmitter.on('destroyToy', callBackFunc);
+  onDestroyCard(callBackFunc) {
+    this.eventEmitter.on('destroyCard', callBackFunc);
+  }
+
+  
+  initCharactor(){
+    this.eventEmitter.emit('initCharactor');
+  }
+
+  onInitCharactor(callBackFunc) {
+    this.eventEmitter.on('initCharactor', callBackFunc);
+  }
+
+  destroyCharactor(){
+    this.eventEmitter.emit('destroyCharactor');
+  }
+
+  onDestroyCharactor(callBackFunc) {
+    this.eventEmitter.on('destroyCharactor', callBackFunc);
+  }
+
+  
+  initEarth(){
+    this.eventEmitter.emit('initEarth');
+  }
+
+  onInitEarth(callBackFunc) {
+    this.eventEmitter.on('initEarth', callBackFunc);
+  }
+
+  destroyEarth(){
+    this.eventEmitter.emit('destroyEarth');
+  }
+
+  onDestroyEarth(callBackFunc) {
+    this.eventEmitter.on('destroyEarth', callBackFunc);
   }
 
   initAbout(){

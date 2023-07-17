@@ -344,6 +344,7 @@ export default async function Project () {
   };
 
   eventEmitter.onDestroyProject(()=>{
+    document.querySelector('#warning-click').removeAttribute('class','show');
     cancelAnimationFrame(frameId);
     renderer.dispose();
     controls.dispose();

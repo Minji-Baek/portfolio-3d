@@ -350,6 +350,8 @@ export default async function Carrer() {
   };
 
   eventEmitter.onDestroyCarrer(()=>{
+    document.querySelector('#warning-click').removeAttribute('class','show');
+
     cancelAnimationFrame(frameId);
     renderer.dispose();
     controls.dispose();

@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import GUI from 'lil-gui';
 import Data from './data/data';
 import {FontLoader} from 'three/examples/jsm/loaders/FontLoader';

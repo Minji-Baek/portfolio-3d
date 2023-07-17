@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import Earth from './models/Earth.js';
 import Planet from './models/Planet.js';
 import GUI from 'lil-gui';

@@ -72,12 +72,12 @@
     <canvas id="canvas"></canvas>
     <script type="importmap">
       {
-          "imports": {
-              "three": "../three/build/three.module.js",
-              "three/examples/jsm/controls/OrbitControls":"../three/examples/jsm/controls/OrbitControls.js",
-              "three/examples/jsm/geometries/TextGeometry": "../three/examples/jsm/geometries/TextGeometry.js",
-              "three/examples/jsm/loaders/FontLoader":"../three/examples/jsm/loaders/FontLoader.js"
-          }
+          
+            "imports": {
+              "three": "../build/three.module.js",
+              "three/addons/": "./jsm/"
+            }
+        
       }
     </script>
     <script type="module" src="./main.js"></script>

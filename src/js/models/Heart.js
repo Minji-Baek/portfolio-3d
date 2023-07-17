@@ -1,6 +1,6 @@
 
 import * as THREE from 'three';
-import {TextGeometry} from 'three/examples/jsm/geometries/TextGeometry';
+import {TextGeometry} from 'three/addons/geometries/TextGeometry';
 import gsap from 'gsap';
 
 export default class Heart {

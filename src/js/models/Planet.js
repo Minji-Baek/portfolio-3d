@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import gsap from 'gsap';
-import {TextGeometry} from 'three/examples/jsm/geometries/TextGeometry';
+import {TextGeometry} from 'three/addons/geometries/TextGeometry';
 
 export default class Planet {
   constructor({cubeR, skeleR, texture, index, planetRadius: planetRadius, font: font, data: data} ){

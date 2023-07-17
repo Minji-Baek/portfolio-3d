@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-vars */
 
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import Earth from './models/Earth.js';
 import Planet from './models/Planet.js';
-import GUI from 'lil-gui';
+import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import Data from './data/data.js';
-import {FontLoader} from 'three/examples/jsm/loaders/FontLoader';
+import {FontLoader} from 'three/addons/loaders/FontLoader';
 import gsap from 'gsap';
 import {ScrollTrigger} from 'gsap/ScrollTrigger';
 import Description from './models/Description.js';

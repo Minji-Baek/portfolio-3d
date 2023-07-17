@@ -1,6 +1,6 @@
 import Carrer from "./Carrer.js";
-import Project from "./Project";
-import { SEventEmitter } from "./utils/EventEmitter";
+import Project from "./Project.js";
+import { SEventEmitter } from "./utils/EventEmitter.js";
 
 export default function () {
 

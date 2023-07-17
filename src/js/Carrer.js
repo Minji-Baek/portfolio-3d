@@ -2,15 +2,15 @@
 
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import Earth from './models/Earth';
-import Planet from './models/Planet';
+import Earth from './models/Earth.js';
+import Planet from './models/Planet.js';
 import GUI from 'lil-gui';
-import Data from './data/data';
+import Data from './data/data.js';
 import {FontLoader} from 'three/examples/jsm/loaders/FontLoader';
 import gsap from 'gsap';
 import {ScrollTrigger} from 'gsap/ScrollTrigger';
-import Description from './models/Description';
-import { SEventEmitter } from './utils/EventEmitter';
+import Description from './models/Description.js';
+import { SEventEmitter } from './utils/EventEmitter.js';
 
 
 export default async function Carrer() {

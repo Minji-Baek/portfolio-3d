@@ -1,4 +1,4 @@
-import { SEventEmitter } from "../utils/EventEmitter";
+import { SEventEmitter } from "../utils/EventEmitter.js";
 
 const Description = (data, index, type) => {
   console.log(data);

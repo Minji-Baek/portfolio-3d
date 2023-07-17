@@ -1,10 +1,10 @@
 import * as THREE from 'three';
-import vertexShader from '../../shaders/earth/vertex.glsl';
-import fragmentShader from '../../shaders/earth/fragment.glsl';
-import pointsVertexShader from '../../shaders/earthPoints/vertex.glsl';
-import pointsFragmentShader from '../../shaders/earthPoints/fragment.glsl';
-import glowVertexShader from '../../shaders/earthGlow/vertex.glsl';
-import glowFragmentShader from '../../shaders/earthGlow/fragment.glsl';
+import vertexShader from '../../shaders/earth/vertex.glsl?raw';
+import fragmentShader from '../../shaders/earth/fragment.glsl?raw';
+import pointsVertexShader from '../../shaders/earthPoints/vertex.glsl?raw';
+import pointsFragmentShader from '../../shaders/earthPoints/fragment.glsl?raw';
+import glowVertexShader from '../../shaders/earthGlow/vertex.glsl?raw';
+import glowFragmentShader from '../../shaders/earthGlow/fragment.glsl?raw';
 
 export default class Earth {
   constructor({baseR, glowR, texture}){

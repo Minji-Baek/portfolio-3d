@@ -2,15 +2,15 @@
 
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import Earth from './models/Earth.js';
-import Planet from './models/Planet.js';
+import Earth from '../models/Earth.js';
+import Planet from '../models/Planet.js';
 // import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
-import Data from './data/data.js';
-import {FontLoader} from 'three/addons/loaders/FontLoader';
+import Data from '../data/data.js';
+import { FontLoader } from 'three/addons/loaders/FontLoader';
 import gsap from 'gsap';
-import {ScrollTrigger} from 'gsap/ScrollTrigger';
-import Description from './models/Description.js';
-import { SEventEmitter } from './utils/EventEmitter.js';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Description from '../models/Description.js';
+import { SEventEmitter } from '../utils/EventEmitter.js';
 
 
 export default async function Carrer() {
@@ -269,12 +269,12 @@ export default async function Carrer() {
 
   const openDescription = (index, showIndex) => {
     //설명  html 켜지는 부분
+    console.log("이것도 많이 도니?")
     document.querySelector('#warning-click').removeAttribute('class','show');
-
 
     document.querySelector('header').setAttribute('class', 'disable');
 
-    const description = Description(data.data[index], showIndex, 'carrer');
+    Description(data, index, showIndex);
     
     // document.querySelector('#canvas').setAttribute('class', 'disable');
     document.querySelector('#scroll').setAttribute('class', 'disable');
@@ -291,10 +291,13 @@ export default async function Carrer() {
 
     canvas.addEventListener('pointermove',(event) =>  handlerPointerMove(event, plantArry));
     eventEmitter.onClearCarrerDescription((index)=>{ 
+      console.log("이게 왤케 많이 돕니까")
       document.querySelector('#warning-click').setAttribute('class','show');
       document.querySelector('#scroll').removeAttribute('class', 'disable');
       document.querySelector('header').removeAttribute('class', 'disable');
-      setCanvasRefresh(plantArry, index);
+      setCanvasRefresh(index);
+      draw({plantArry});
+
     })
 
     canvas.addEventListener('pointerdown',(event) =>  handlerPointerDown(event, plantArry));
@@ -309,8 +312,8 @@ export default async function Carrer() {
     });
   };
 
-  const setCanvasRefresh = (plantArry, index) => {
-    
+  const setCanvasRefresh = (index) => {
+    console.log("이게 왤케 많이 돕니까222")
     gsap.to(controls.object.position,{
       x: controls.position0.x,
       y: controls.position0.y,
@@ -320,7 +323,6 @@ export default async function Carrer() {
         document.querySelector(`#planet-${index}`).scrollIntoView();
       }
     });
-    draw({plantArry});
   }
  
 
@@ -328,33 +330,34 @@ export default async function Carrer() {
     const { plantArry  } = obj;   
    
     // earth.update(controls, clock.getElapsedTime());
-    plantArry.forEach(planet => planet.update(clock.getElapsedTime()))
+    plantArry.forEach(planet => planet.update(clock.getElapsedTime()));
     controls.update();
    
     renderer.render(scene, camera);   
-    // console.log("dksehaf??????")
     frameId = requestAnimationFrame(() => {
       draw(obj);
     });
   };
 
   const initialize = async () => {
-    // const gui = new GUI();
-    // gui.hide();
-    // container.appendChild(renderer.domElement);
     const obj = create();
     addEvent(obj);
     resize();
     draw(obj);
 
   };
+  const destroy = () => {
+    cancelAnimationFrame(frameId);
+    scene.clear();
+    renderer.dispose();
+    controls.dispose();
+  }
 
   eventEmitter.onDestroyCarrer(()=>{
     document.querySelector('#warning-click').removeAttribute('class','show');
+    
+    destroy();
 
-    cancelAnimationFrame(frameId);
-    renderer.dispose();
-    controls.dispose();
     const home = document.querySelector('#home');
     home.removeEventListener('click', (event) =>{
       reset(plantArry);

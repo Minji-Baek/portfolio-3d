@@ -1,5 +1,5 @@
-import Carrer from "./Carrer.js";
-import Project from "./Project.js";
+import Carrer from "./scene/Carrer.js";
+import Project from "./scene/Project.js";
 import { SEventEmitter } from "./utils/EventEmitter.js";
 
 export default function () {
@@ -83,6 +83,7 @@ export default function () {
 
 
   window.addEventListener('load',()=>{
+    // console.log("요기ㅓ")
     eventEmitter.initCarrer();
   })
 }

@@ -3,13 +3,13 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 // import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
-import Data from './data/data';
+import Data from '../data/data.js';
 import {FontLoader} from 'three/addons/loaders/FontLoader';
 import gsap from 'gsap';
-import Description from './models/Description';
-import { SEventEmitter } from './utils/EventEmitter';
-import Heart from './models/Heart';
-import Wave from './models/Wave';
+import Description from '../models/Description';
+import { SEventEmitter } from '../utils/EventEmitter';
+import Heart from '../models/Heart';
+import Wave from '../models/Wave';
 
 
 export default async function Project () {
@@ -72,12 +72,12 @@ export default async function Project () {
   const font =  await fontLoader.loadAsync('./assets/fonts/Gugi_Regular.json');
 
   let changeObjArry = [];
-  const clickAni = gsap.timeline({
-    id: 'click',
-    smoothChildTiming: true,
-    autoRemoveChildren: true,
+  const rotationAni = gsap.timeline({
+    id: 'rotation',
+    // smoothChildTiming: true,
+    // autoRemoveChildren: true,
   });
-  let frameId = '';
+  let carrerFrame = '';
 
   const count = 90;
 
@@ -164,7 +164,7 @@ export default async function Project () {
         const object = intersects[0].object;
         if(object.parent.name === 'planet'){
             const selectArr =  plantArry.filter((arry) => {return arry.planet.id === object.parent.id} );
-            params.texture = projectTextureLoader.load(data.data[object.userData.index].img),
+            
             selectArr[0].heartAnime('hover'); //animation
             const changeArr = changeObjArry.filter((obj)=> { return obj.parent.id === object.parent.id});
             if(changeArr.length > 0){ //중복
@@ -194,7 +194,7 @@ export default async function Project () {
 
     const intersects = raycatster.intersectObjects(scene.children);
 
-    if(intersects.length > 0){
+    if(intersects.length > 0 && !rotationAni.isActive()){
       const object = intersects[0].object;
         if(object.parent.name === 'planet'){
           controls.reset();
@@ -217,6 +217,7 @@ export default async function Project () {
           wave.animation('small');  
           selectArr[0].animation('big'); //animation
           selectArr[0].heartAnime('hover'); //animation
+          params.texture = projectTextureLoader.load(data.data[object.userData.index].img);
           wave.animation('hover', params);
           document.querySelector('#warning-click').setAttribute('class','show');
         }else{
@@ -236,58 +237,59 @@ export default async function Project () {
   function handlerClickDouble (wave, heartGroup) {  
     //double click => show description
     const intersects = raycatster.intersectObjects(scene.children);
-    if(intersects.length > 0  && !clickAni.isActive()){
+    if(intersects.length > 0  ){
       const object = intersects[0].object;
         if(object.parent.name === 'planet'){
-          gsap.to(controls.object.position,{
+          rotationAni.to(controls.object.position,{
             y: 25.67,
-            z:  16.59,
+            z: 16.59,
             duration: 2,
             onStart:()=>{
               wave.animation('small');  
-
             },
-            onComplete: ()=>{
-              openDescription(object.userData.index, object.userData.index);
-            }
           },'<')
-          gsap.to(heartGroup.rotation,{
+          .to(heartGroup.rotation,{
             z:  Math.PI * 4,
             duration: 2,
+            onComplete: ()=>{
+              openDescription(object.userData.index);
+              rotationAni.clear(true);
+            }
           },'<')
         }
     }
   }
  
 
-  const openDescription = (index, showIndex) => {
+  const openDescription = (index) => {
     //설명  html 켜지는 부분
     document.querySelector('#warning-click').removeAttribute('class','show');
     document.querySelector('header').setAttribute('class', 'disable');
-    const description = Description(data.data[index], showIndex, 'project');
+    Description(data, index);
     document.querySelector('#scroll').setAttribute('class', 'disable');
-    cancelAnimationFrame(frameId);
+    cancelAnimationFrame(carrerFrame);
     // document.querySelector('#canvas').setAttribute('class', 'disable');
     // console.log(data.data[index]);
   }
 
   const setCanvasRefresh = (obj) => {
-    draw(obj);
-    gsap.to(obj.heartGroup.rotation,{
+  
+    rotationAni.to(obj.heartGroup.rotation,{
       z: - Math.PI * 4,
       duration: 2,
-    },'<');
-    gsap.to(controls.object.position,{
+    },'<')
+    .to(controls.object.position,{
       x: controls.position0.x,
       y: controls.position0.y,
       z: controls.position0.z,
       duration: 2,
       onComplete: ()=>{
         obj.wave.animation('hover', params);
-      }
-    },'<')
-   
+        rotationAni.clear(true);
 
+      }
+    },'<');
+    
   }
 
   const addEvent = (obj) => {
@@ -301,6 +303,7 @@ export default async function Project () {
       document.querySelector('#scroll').removeAttribute('class', 'disable');
       document.querySelector('header').removeAttribute('class', 'disable');
       setCanvasRefresh(obj);
+      draw(obj);
     })
 
     canvas.addEventListener('pointerdown',(event) =>  handlerPointerDown(event, plantArry, wave));
@@ -313,37 +316,33 @@ export default async function Project () {
 
   const draw = (obj) => {
     const { plantArry, wave, heartGroup  } = obj;   
-   
     // earth.update(controls, clock.getElapsedTime());
     plantArry.forEach(planet => planet.update(clock.getElapsedTime()))
     wave.update(clock);
     controls.update();
     renderer.render(scene, camera);   
-    frameId = requestAnimationFrame(() => {
+    carrerFrame = requestAnimationFrame(() => {
       draw(obj);
     });
   };
 
   const initialize = async () => {
-   
-    // gui.hide();
-    // // container.appendChild(renderer.domElement);
-    // gui.add(controls.object.position, 'x', -1000, 1000, 0.01);
-    // gui.add(controls.object.position, 'y', -1000, 1000, 0.01);
-    // gui.add(controls.object.position, 'z', -1000, 1000, 0.01);
     const obj = create();    
-
     addEvent(obj);
     resize();
     draw(obj);
-
   };
+  const destroy = () => {
+    cancelAnimationFrame(carrerFrame);
+    scene.clear();
+    renderer.dispose();
+    controls.dispose();
+  }
 
   eventEmitter.onDestroyProject(()=>{
     document.querySelector('#warning-click').removeAttribute('class','show');
-    cancelAnimationFrame(frameId);
-    renderer.dispose();
-    controls.dispose();
+   
+    destroy();
   });
 
   await initialize();

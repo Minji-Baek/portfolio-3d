@@ -1,6 +1,7 @@
 export default class Data {
   constructor( {about} ){
     this.data = [];
+    this.type = about;
     switch (about){
       case 'carrer' : {
         this.data = [
@@ -49,8 +50,8 @@ export default class Data {
             company: ['Samsung S1','Companion System'],
             date:[ '202006', '202202'], Languege: ['C++'], 
             detail: ['Samsung 에스원 파견 Project',
-            'smartsearch - 인증 확률을 다양한 옵션을 통해 조절하여 검색을 빠르게 처리해 인증 속도를 높여주는 시스템', 
-            'v3 - 이미지 프로세싱 기술을 사용하여 저장된 사진으로 얼굴 인증을 하는 시스템',],
+            'SmartSearch - 인증 확률을 다양한 옵션을 통해 조절하여 검색을 빠르게 처리해 인증 속도를 높여주는 시스템', 
+            'V3 - 이미지 프로세싱 기술을 사용하여 저장된 사진으로 얼굴 인증을 하는 시스템',],
             pitch: ['시스템 내 마스크 인증 사용 옵션 추가 개발','마스크 인증의 옵션 확률을 다르게'],
             role: ['마스크 사용 인증 옵션과 온도 체크 옵션에 따른 출입 기계와의 상호 통신 부분 개발', '중국 및 여러 사업장에 배포 후 현재 운영 중']}
         ]

@@ -62,7 +62,7 @@ export default async function Charactor () {
   }
   const gltfLoader = new GLTFLoader(loadingManger);
  
-  const gltf = await gltfLoader.loadAsync('./src/model/character.gltf');
+  const gltf = await gltfLoader.loadAsync('./assets/model/character.gltf');
   const conbatAnimations = gltf.animations.slice(0, 5);
   const dancingAnimations = gltf.animations.slice(5);
 

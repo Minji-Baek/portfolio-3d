@@ -91,7 +91,7 @@ export default function Earth () {
     enviromentMap.encoding = THREE.sRGBEncoding;
     scene.background = enviromentMap;
     scene.environment = enviromentMap;
-    const earth = new DayEarth({ baseR: 1.3, glowR: 1.5, earthTexture: textureLoader.load('./assets/textures/2k_earth_nightmap.jpg'), starTexture: textureLoader.load('../../assets/textures/particle.png')} );
+    const earth = new DayEarth({ baseR: 1.3, glowR: 1.5, earthTexture: textureLoader.load('./assets/textures/2k_earth_nightmap.jpg'), starTexture: textureLoader.load('./assets/textures/particle.png')} );
 
     scene.add(earth.earthGroup, earth.stars);
     // const earthG = earth.earthGroup;

@@ -6,7 +6,7 @@ export default defineConfig({
   base: '/portfolio-3d/',
   build: {
     chunkSizeWarningLimit: 1600,
-    outDir: '../dist',
-    emptyOutDir: true,
+    // outDir: '../dist',
+    // emptyOutDir: true,
     },
 })

@@ -69,7 +69,7 @@ export default function Earth () {
 
 
   const create = () => {
-    const earth = new knightEarth({ baseR: 0.8, glowR: 1, texture: textureLoader.load('../../assets/2k_earth_specular_map.png')});
+    const earth = new knightEarth({ baseR: 0.8, glowR: 1, texture: textureLoader.load('./assets/2k_earth_specular_map.png')});
 
     scene.add(earth.earth);
     return {
@@ -84,14 +84,14 @@ export default function Earth () {
 
   const createDayEarth = () => {
     const enviromentMap = cubeTextureLoader.load([
-      '../../assets/enviroments/px.png',  '../../assets/enviroments/nx.png', 
-      '../../assets/enviroments/py.png',  '../../assets/enviroments/ny.png',
-      '../../assets/enviroments/pz.png',  '../../assets/enviroments/nz.png'
+      './assets/enviroments/px.png',  './assets/enviroments/nx.png', 
+      './assets/enviroments/py.png',  './assets/enviroments/ny.png',
+      './assets/enviroments/pz.png',  './assets/enviroments/nz.png'
     ]);
     enviromentMap.encoding = THREE.sRGBEncoding;
     scene.background = enviromentMap;
     scene.environment = enviromentMap;
-    const earth = new DayEarth({ baseR: 1.3, glowR: 1.5, earthTexture: textureLoader.load('../../assets/textures/2k_earth_nightmap.jpg'), starTexture: textureLoader.load('../../assets/textures/particle.png')} );
+    const earth = new DayEarth({ baseR: 1.3, glowR: 1.5, earthTexture: textureLoader.load('./assets/textures/2k_earth_nightmap.jpg'), starTexture: textureLoader.load('../../assets/textures/particle.png')} );
 
     scene.add(earth.earthGroup, earth.stars);
     // const earthG = earth.earthGroup;

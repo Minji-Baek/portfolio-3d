@@ -49,7 +49,7 @@ export default function CardShow () {
   const width = 10;
   const height = 15.8;
   const textureLoader = new THREE.TextureLoader();
-  const texture = textureLoader.load('../../../public/assets/textures/card.png');
+  const texture = textureLoader.load('./assets/textures/card.png');
   texture.wrapS = texture.wrapT = THREE.RepeatWrapping; // CHANGED
   texture.center.set(width/2 , height/2 + 0.06)
   texture.repeat.set(0.158 * 0.6, 0.1 * 0.6);

@@ -131,8 +131,7 @@ export default function Earth () {
 
   const addEvent = () => {
     window.addEventListener('resize', resize);
-    console.log("addEvent")
-    earthEle.addEventListener('click', clickHandler )
+    earthEle.addEventListener('click', clickHandler );
   };
 
   const draw = (obj) => {
@@ -176,19 +175,18 @@ export default function Earth () {
 
 
   const destroy = () => {
-    console.log("destroyEarth")
     cancelAnimationFrame(toyFrame);
     scene.clear();
     scene.background = null;
     scene.background = null;
     // scene.dispose();
-    earthEle.removeEventListener('click', clickHandler );    
     renderer.dispose();
     effectComposer.dispose();
     controls.dispose();
   }
 
   eventEmitter.onDestroyEarth(()=>{
+    earthEle.removeEventListener('click', clickHandler );    
     document.querySelector('#earth').removeAttribute('class','earth');
     document.querySelector('#earth').setAttribute('class', 'disable');
     destroy();

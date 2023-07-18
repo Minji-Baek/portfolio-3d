@@ -3,28 +3,81 @@ import Project from "./scene/Project.js";
 import Charactor from "./scene/Charactor.js";
 import { SEventEmitter } from "./utils/EventEmitter.js";
 import Earth from "./scene/Earth.js";
+import CardShow from "./scene/CardShow.js";
 
 export default function () {
-
   const eventEmitter = SEventEmitter;
-  eventEmitter.onInitProject( async() => await Project());
-  eventEmitter.onInitCarrer( async() => await Carrer());
-  eventEmitter.onInitCharactor( async () => await  Charactor());
+  eventEmitter.onInitProject( async() => {
+      document.querySelector("#progress-bar-container").removeAttribute('class', 'disable');
+      await Project();
+    }
+  );
+
+  eventEmitter.onInitCarrer( async() =>{
+    document.querySelector("#progress-bar-container").removeAttribute('class', 'disable');
+    await Carrer();
+  } );
+
+  eventEmitter.onInitCharactor( async () => {
+    if(document.querySelector('#actions').hasAttribute('class')){
+      document.querySelector('#actions').removeAttribute('class', 'disable');
+      document.querySelector('#actions').setAttribute('class', 'actions');
+      document.querySelector("#progress-bar-container").removeAttribute('class', 'disable');
+    }
+      await  Charactor();
+    }
+  );
+  eventEmitter.onInitCard(  () => {
+    if(document.querySelector('#actions').hasAttribute('class')){
+      document.querySelector('#actions').removeAttribute('class', 'disable');
+      document.querySelector('#actions').setAttribute('class', 'card');
+    }
+        CardShow();
+    }
+  );
   eventEmitter.onInitEarth( () => Earth());
 
-  const checkDestroyEmitter = (preContext) => {
+  eventEmitter.onInitAbout( ()=>{
+    if(document.querySelector('#about').hasAttribute('class')){
+      document.querySelector('#about').removeAttribute('class', 'disable');
+      document.querySelector('#about').setAttribute('class', 'about');
+    }
+  });
+
+  eventEmitter.onDestroyAbout( ()=>{
+    if(document.querySelector('#about').hasAttribute('class')){
+      document.querySelector('#about').removeAttribute('class', 'about');
+      document.querySelector('#about').setAttribute('class', 'aboutEnd');
+
+      setTimeout(() => {
+        document.querySelector('#about').setAttribute('class', 'disable');      
+      }, 1 * 1000);
+    }
+  });
+
+
+  const checkDestroyEmitter = (preContext, index) => {
     if(preContext === "CARRER"){
       eventEmitter.destroyCarrer();
+
     }else if(preContext === "PROJECT"){
       eventEmitter.destroyProject();
 
     }else if(preContext.includes('ABOUT')){
       eventEmitter.destroyAbout();
+
     }else if(preContext === "CHARACTOR"){
       eventEmitter.destroyCharactor();
+      if(index != 2 ){
+        document.querySelectorAll('#right-buttons .button-in-header')[2].textContent = "TOY PROJECTS"
+      }
 
     }else if(preContext === "CARD"){
       eventEmitter.destroyCard();
+      if(index != 2 ){
+        document.querySelectorAll('#right-buttons .button-in-header')[2].textContent = "TOY PROJECTS"
+      }
+
     }else if(preContext.includes('EARTH')){
       eventEmitter.destroyEarth();
     }
@@ -35,17 +88,15 @@ export default function () {
     element.addEventListener("click", (event) => {
       const preContext = document.getElementById("active-menu").textContent.toString();
 
-      if((element.textContent === document.getElementById("active-menu").textContent) && (index !== 0)){
-        // console.log('중복')
+      if((element.textContent === document.getElementById("active-menu").textContent) && (index !== 0 && index !== 2 ) ){
         return;
       }
+      
       document.getElementById("active-menu").removeAttribute("id");
       element.setAttribute("id", "active-menu");
-     
-
       switch(index){
         case 0 :{
-          checkDestroyEmitter(preContext);
+          checkDestroyEmitter(preContext, index);
           if (element.textContent === "CARRER"){
             eventEmitter.initProject();
             element.textContent = "PROJECT";
@@ -56,12 +107,12 @@ export default function () {
           break;
         }
         case 1 :{
-          checkDestroyEmitter(preContext);
+          checkDestroyEmitter(preContext, index);
           eventEmitter.initEarth();
           break;
         }
         case 2 :{
-          checkDestroyEmitter(preContext);
+          checkDestroyEmitter(preContext, index);
           if (element.textContent === "CHARACTOR"){
             eventEmitter.initCard();
             element.textContent = "CARD";
@@ -72,7 +123,7 @@ export default function () {
           break;
         }
         case 3 :{  
-          checkDestroyEmitter(preContext);
+          checkDestroyEmitter(preContext, index);
           eventEmitter.initAbout();
           break;
         }
@@ -88,12 +139,20 @@ export default function () {
         document.getElementById("active-menu").removeAttribute("id");
         element.setAttribute("id", "active-menu");
 
-        if (preContext.includes('TOY')){
-          eventEmitter.destroyToy();
+        if(preContext === "PROJECT"){
+          eventEmitter.destroyProject();
+    
         }else if(preContext.includes('ABOUT')){
           eventEmitter.destroyAbout();
-        }else if(preContext === "PROJECT"){
-          eventEmitter.destroyProject();
+    
+        }else if(preContext === "CHARACTOR"){
+          eventEmitter.destroyCharactor();
+          document.querySelectorAll('#right-buttons .button-in-header')[2].textContent = "TOY PROJECTS"
+        }else if(preContext === "CARD"){
+          eventEmitter.destroyCard();
+          document.querySelectorAll('#right-buttons .button-in-header')[2].textContent = "TOY PROJECTS"
+        }else if(preContext.includes('EARTH')){
+          eventEmitter.destroyEarth();
         }
         eventEmitter.initCarrer();
         element.textContent = "CARRER";
@@ -104,7 +163,6 @@ export default function () {
 
 
   window.addEventListener('load',()=>{
-    // console.log("요기ㅓ")
     eventEmitter.initCarrer();
   })
 }

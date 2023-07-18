@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import Earth from '../models/knightEarth.js';
 import Planet from '../models/Planet.js';
-// import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import Data from '../data/data.js';
 import { FontLoader } from 'three/addons/loaders/FontLoader';
 import gsap from 'gsap';
@@ -21,17 +21,6 @@ export default async function Carrer() {
   const count = 60;
   const planetRadius = 3;
 
-
-
-  // const loadingManger = new THREE.LoadingManager();
-  // loadingManger.onProgress = (url, loaded, total) => {
-  //   //총량: total, 진행상태: loaded
-  //   bar.value = (loaded / total) * 100;
-  // }
-  // loadingManger.onLoad = () => {
-  //   barContainer.style.display = 'none';
-  // }
-
   const renderer = new THREE.WebGLRenderer({
     antialias: true, //pixel 다듬기?
     alpha: true,
@@ -46,8 +35,6 @@ export default async function Carrer() {
   };
   const clock = new THREE.Clock();
   const projectTextureLoader = new THREE.TextureLoader();
-  // const fontLoader = new FontLoader(loadingManger);
-  const fontLoader = new FontLoader();
 
   projectTextureLoader.setPath('./assets/projects/');
 
@@ -58,6 +45,7 @@ export default async function Carrer() {
     0.1,
     100
   );
+  
   camera.position.set( -0.073, -0.017, 3.689);
 
   const controls = new OrbitControls(camera, renderer.domElement);
@@ -74,14 +62,30 @@ export default async function Carrer() {
   const raycatster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   const data = new Data({about: 'carrer'});
+
+
+  const bar = document.querySelector("#progress-bar");
+  const barContainer = document.querySelector("#progress-bar-container");
+
+
+  const loadingManger = new THREE.LoadingManager();
+  loadingManger.onProgress = (url, loaded, total) => {
+    //총량: total, 진행상태: loaded
+    bar.value = (loaded / total) * 100;
+  }
+  loadingManger.onLoad = () => {
+    barContainer.style.display = 'none';
+  }
+  const fontLoader = new FontLoader(loadingManger);
   const font =  await fontLoader.loadAsync('./assets/fonts/Gugi_Regular.json');
 
   let changeObjArry = [];
   let vecArry = [];
+  let createArry = [];
   const clickAni = gsap.timeline({
     id: 'click',
-    smoothChildTiming: true,
-    autoRemoveChildren: true,
+    // smoothChildTiming: true,
+    // autoRemoveChildren: true,
   });
   let frameId = '';
 
@@ -112,7 +116,7 @@ export default async function Carrer() {
       container.appendChild(div);
       return arr.planet.position; 
     });
-
+    createArry = plantArry;
     
     return {
       plantArry
@@ -172,8 +176,8 @@ export default async function Carrer() {
 
   function handlerPointerDown (event, plantArry) {
     const intersects = raycatster.intersectObjects(scene.children);
-
-    if(intersects.length > 0){
+    
+    if(intersects.length > 0 && !clickAni.isActive()){
       const object = intersects[0].object;
       // console.log("object",object)
         if(object.parent.name === 'planet'){
@@ -250,16 +254,20 @@ export default async function Carrer() {
     if(intersects.length > 0  && !clickAni.isActive()){
       const object = intersects[0].object;
         if(object.parent.name === 'planet'){
+          document.querySelector('header').style.cursor = 'none';
+          document.querySelector('header').style.pointerEvents = 'none';
+          canvas.style.cursor = 'none';
           let showIndex = (object.userData.index -3);
           if(showIndex < 0){
             showIndex = showIndex + plantArry.length;
           }
-          gsap.to(controls.object.position,{
+          clickAni.to(controls.object.position,{
             x: 0.13,
             z: 3.2,
             duration: 2,
             onComplete: ()=>{
               openDescription(object.userData.index, showIndex);
+              clickAni.clear(true);
             }
           })
         }
@@ -269,7 +277,6 @@ export default async function Carrer() {
 
   const openDescription = (index, showIndex) => {
     //설명  html 켜지는 부분
-    console.log("이것도 많이 도니?")
     document.querySelector('#warning-click').removeAttribute('class','show');
 
     document.querySelector('header').setAttribute('class', 'disable');
@@ -284,44 +291,78 @@ export default async function Carrer() {
     // console.log(data.data[index]);
   }
 
+  const destroy = () => {
+    
+    cancelAnimationFrame(frameId);
+    scene.clear();
+    renderer.dispose();
+    controls.dispose();
+  }
+
   const addEvent = (obj) => {
     const { plantArry  } = obj;   
     window.addEventListener('resize', resize);
     addScrollEvent(plantArry);
 
-    canvas.addEventListener('pointermove',(event) =>  handlerPointerMove(event, plantArry));
-    eventEmitter.onClearCarrerDescription((index)=>{ 
-      console.log("이게 왤케 많이 돕니까")
-      document.querySelector('#warning-click').setAttribute('class','show');
-      document.querySelector('#scroll').removeAttribute('class', 'disable');
-      document.querySelector('header').removeAttribute('class', 'disable');
-      setCanvasRefresh(index);
-      draw({plantArry});
+    const handleEventMove =  (event) => handlerPointerMove(event, plantArry);
+    const handleEventDown =  (event) => handlerPointerDown(event, plantArry);
+    const handleEventDB =  () => handlerClickDouble(plantArry);
+    const handleEventHome =  (event) => {
+                                          reset(plantArry);
+                                          document.querySelector("#planet-0").scrollIntoView({
+                                            behavior: 'smooth'
+                                          })
+                                        }
 
-    })
-
-    canvas.addEventListener('pointerdown',(event) =>  handlerPointerDown(event, plantArry));
-    canvas.addEventListener('dblclick', () => handlerClickDouble(plantArry));
+    canvas.addEventListener('pointermove', handleEventMove);
+    canvas.addEventListener('pointerdown', handleEventDown);
+    canvas.addEventListener('dblclick', handleEventDB);
 
     const home = document.querySelector('#home');
-    home.addEventListener('click', (event) =>{
-      reset(plantArry);
-      document.querySelector("#planet-0").scrollIntoView({
-        behavior: 'smooth'
-      })
+    home.addEventListener('click', handleEventHome );
+
+    eventEmitter.onClearCarrerDescription((index)=>{
+      document.querySelector('#scroll').removeAttribute('class', 'disable');
+      document.querySelector(`#planet-${index}`).scrollIntoView();
+      setCanvasRefresh(index);
+      draw({plantArry});
+    })
+
+    eventEmitter.onDestroyCarrer(()=>{
+      window.removeEventListener('resize', resize);
+      canvas.removeEventListener('pointermove', handleEventMove);
+      canvas.removeEventListener('pointerdown',handleEventDown);
+      canvas.removeEventListener('dblclick',  handleEventDB);
+      const home = document.querySelector('#home');
+      home.removeEventListener('click',handleEventHome);
+      barContainer.style.display = 'flex';
+      barContainer.setAttribute('class', 'disable');
+  
+      document.querySelector('#warning-click').removeAttribute('class','show');
+      document.querySelector('#scroll').setAttribute('class', 'disable');
+      destroy();
     });
+
   };
 
   const setCanvasRefresh = (index) => {
-    gsap.to(controls.object.position,{
+
+    clickAni.to(controls.object.position,{
       x: controls.position0.x,
       y: controls.position0.y,
       z: controls.position0.z,
       duration: 2,
-      onStart: () => {
-        document.querySelector(`#planet-${index}`).scrollIntoView();
+      onStart: ()=>{
+        document.querySelector('#warning-click').setAttribute('class','show');     
+        document.querySelector('header').removeAttribute('class', 'disable');
+      },
+      onComplete: ()=>{
+        canvas.style.cursor = 'unset';
+        document.querySelector('header').style.cursor = 'unset';
+        document.querySelector('header').style.pointerEvents = 'auto';
+        clickAni.clear(true);
       }
-    });
+    }, '<');
   }
  
 
@@ -338,39 +379,27 @@ export default async function Carrer() {
     });
   };
 
-  const initialize = async () => {
+  const initialize =  () => {
     if(document.querySelector('#scroll').hasAttribute('class')){
       document.querySelector('#scroll').removeAttribute('class', 'disable');
     }
     const obj = create();
+    gsap.fromTo(controls.object.position, 
+      {x: 0, y: 0, z: 0}, 
+      {
+        x: -0.073, y: -0.017, z: 3.689, duration: 1
+      })
+
+
+    bar.value = 0;
     addEvent(obj);
     resize();
     draw(obj);
 
   };
-  const destroy = () => {
-    cancelAnimationFrame(frameId);
-    scene.clear();
-    renderer.dispose();
-    controls.dispose();
-  }
 
-  eventEmitter.onDestroyCarrer(()=>{
-    document.querySelector('#warning-click').removeAttribute('class','show');
-    document.querySelector('#scroll').setAttribute('class', 'disable');
 
-    destroy();
-
-    const home = document.querySelector('#home');
-    home.removeEventListener('click', (event) =>{
-      reset(plantArry);
-      document.querySelector("#planet-0").scrollIntoView({
-        behavior: 'smooth'
-      })
-    });
-  });
-
-  await initialize();
+  initialize();
 }
 
 // window.addEventListener('load', async() => await init() )

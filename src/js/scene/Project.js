@@ -2,7 +2,7 @@
 
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-// import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import Data from '../data/data.js';
 import {FontLoader} from 'three/addons/loaders/FontLoader';
 import gsap from 'gsap';
@@ -16,15 +16,7 @@ export default async function Project () {
   const eventEmitter = SEventEmitter;
   const canvas = document.querySelector('#canvas');
   const scrollEle =  document.querySelector('#scroll');
-  // const gui = new GUI();
-  // const loadingManger = new THREE.LoadingManager();
-  // loadingManger.onProgress = (url, loaded, total) => {
-  //   //총량: total, 진행상태: loaded
-  //   bar.value = (loaded / total) * 100;
-  // }
-  // loadingManger.onLoad = () => {
-  //   barContainer.style.display = 'none';
-  // }
+
 
   const renderer = new THREE.WebGLRenderer({
     antialias: true, //pixel 다듬기?
@@ -40,8 +32,22 @@ export default async function Project () {
   };
   const clock = new THREE.Clock();
   const projectTextureLoader = new THREE.TextureLoader();
-  // const fontLoader = new FontLoader(loadingManger);
-  const fontLoader = new FontLoader();
+
+  const bar = document.querySelector("#progress-bar");
+  const barContainer = document.querySelector("#progress-bar-container");
+
+
+  const loadingManger = new THREE.LoadingManager();
+  loadingManger.onProgress = (url, loaded, total) => {
+    //총량: total, 진행상태: loaded
+    bar.value = (loaded / total) * 100;
+  }
+  loadingManger.onLoad = () => {
+    barContainer.style.display = 'none';
+  }
+  const fontLoader = new FontLoader(loadingManger);
+
+  // const fontLoader = new FontLoader();
 
   projectTextureLoader.setPath('./assets/projects/');
 
@@ -62,7 +68,7 @@ export default async function Project () {
   controls.maxPolarAngle = Math.PI ;
   controls.enableZoom = false;
   controls.enablePan = false;
-  controls.enabled = false;
+  // controls.enabled = false;
 
   controls.dampingFactor = 0.1;
   controls.saveState();
@@ -238,9 +244,12 @@ export default async function Project () {
   function handlerClickDouble (wave, heartGroup) {  
     //double click => show description
     const intersects = raycatster.intersectObjects(scene.children);
-    if(intersects.length > 0  ){
+    if(intersects.length > 0  && !rotationAni.isActive()){
       const object = intersects[0].object;
         if(object.parent.name === 'planet'){
+          canvas.style.cursor = 'none';
+          document.querySelector('header').style.cursor = 'none';
+          document.querySelector('header').style.pointerEvents = 'none';
           rotationAni.to(controls.object.position,{
             y: 25.67,
             z: 16.59,
@@ -286,6 +295,9 @@ export default async function Project () {
       duration: 2,
       onComplete: ()=>{
         obj.wave.animation('hover', params);
+        canvas.style.cursor = 'unset';
+        document.querySelector('header').style.cursor = 'unset';
+        document.querySelector('header').style.pointerEvents = 'auto';
         rotationAni.clear(true);
 
       }
@@ -296,8 +308,15 @@ export default async function Project () {
   const addEvent = (obj) => {
     const { plantArry, wave, heartGroup  } = obj;   
     window.addEventListener('resize', resize);
-    // addScrollEvent(plantArry, wave);
-    canvas.addEventListener('pointermove',(event) =>  handlerPointerMove(event, plantArry, wave));
+
+    const handleEventMove =  (event) =>  handlerPointerMove(event, plantArry, wave);
+    const handleEventDown =  (event) =>  handlerPointerDown(event, plantArry, wave);
+    const handleEventDB =   () => handlerClickDouble(wave, heartGroup);
+
+
+    canvas.addEventListener('pointermove',handleEventMove);
+    canvas.addEventListener('pointerdown',handleEventDown);
+    canvas.addEventListener('dblclick', handleEventDB);
 
     eventEmitter.onClearProDescription(()=>{ 
       document.querySelector('#warning-click').setAttribute('class','show');
@@ -307,9 +326,19 @@ export default async function Project () {
       draw(obj);
     })
 
-    canvas.addEventListener('pointerdown',(event) =>  handlerPointerDown(event, plantArry, wave));
-    canvas.addEventListener('dblclick', () => handlerClickDouble(wave, heartGroup));
-
+    eventEmitter.onDestroyProject(()=>{
+      window.removeEventListener('resize', resize);
+      canvas.removeEventListener('pointermove', handleEventMove);
+      canvas.removeEventListener('pointerdown',handleEventDown);
+      canvas.removeEventListener('dblclick', handleEventDB);
+  
+      document.querySelector('#warning-click').removeAttribute('class','show');
+      document.querySelector('#scroll').setAttribute('class', 'disable');
+      barContainer.style.display = 'flex';
+      barContainer.setAttribute('class', 'disable');
+  
+      destroy();
+    });
   };
 
 
@@ -327,16 +356,24 @@ export default async function Project () {
     });
   };
 
-  const initialize = async () => {
+  const initialize =  () => {
     if(scrollEle.hasAttribute('class')){
       scrollEle.removeAttribute('class', 'disable');
     }
-    const obj = create();    
+    const obj = create();  
+    
+    gsap.fromTo(controls.object.position, 
+      {x: 0, y: 0, z: 0}, 
+      {
+        x: 0, y: 33, z:97, duration: 2
+      })
+      bar.value = 0;
     addEvent(obj);
     resize();
-    console.log(scene.children)
     draw(obj);
   };
+
+
   const destroy = () => {
     cancelAnimationFrame(carrerFrame);
     scene.clear();
@@ -344,14 +381,9 @@ export default async function Project () {
     controls.dispose();
   }
 
-  eventEmitter.onDestroyProject(()=>{
-    document.querySelector('#warning-click').removeAttribute('class','show');
-    document.querySelector('#scroll').setAttribute('class', 'disable');
-   
-    destroy();
-  });
+  
 
-  await initialize();
+  initialize();
 }
 
 // window.addEventListener('load', async() => await init() )

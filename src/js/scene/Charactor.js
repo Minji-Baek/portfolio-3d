@@ -11,23 +11,14 @@ export default async function Charactor () {
   const eventEmitter = SEventEmitter;
   const canvas = document.querySelector('#canvas');
   const activeEle =  document.querySelector('#actions');
-  // const gui = new GUI();
-  // const loadingManger = new THREE.LoadingManager();
-  // loadingManger.onProgress = (url, loaded, total) => {
-  //   //총량: total, 진행상태: loaded
-  //   bar.value = (loaded / total) * 100;
-  // }
-  // loadingManger.onLoad = () => {
-  //   barContainer.style.display = 'none';
-  // }
+
   
   const renderer = new THREE.WebGLRenderer({
     antialias: true, //pixel 다듬기?
-    alpha: true,
     canvas: canvas, 
   });
+  renderer.outputEncoding = THREE.sRGBEncoding;
 
-  renderer.setClearColor(0xffffff, 1);
   renderer.shadowMap.enabled = true;
   const canvasSize = {
     width: window.innerWidth,
@@ -38,7 +29,6 @@ export default async function Charactor () {
   const pointer = new THREE.Vector2();
 
   const scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(0xf0f0f0, 0.1, 500);
 
   const camera = new THREE.PerspectiveCamera(
     75, //75가 널리 쓰임
@@ -61,22 +51,18 @@ export default async function Charactor () {
   const bar = document.querySelector("#progress-bar");
   const barContainer = document.querySelector("#progress-bar-container");
 
-  if(activeEle.hasAttribute('class')){
-    activeEle.removeAttribute('class', 'disable');
-    barContainer.removeAttribute('class', 'disable');
-
-  }
   const loadingManger = new THREE.LoadingManager();
   loadingManger.onProgress = (url, loaded, total) => {
     //총량: total, 진행상태: loaded
     bar.value = (loaded / total) * 100;
   }
   loadingManger.onLoad = () => {
+    bar.value = 0;
     barContainer.style.display = 'none';
   }
   const gltfLoader = new GLTFLoader(loadingManger);
  
-  const gltf = await gltfLoader.loadAsync('../../model/character.gltf');
+  const gltf = await gltfLoader.loadAsync('./src/model/character.gltf');
   const conbatAnimations = gltf.animations.slice(0, 5);
   const dancingAnimations = gltf.animations.slice(5);
 
@@ -177,32 +163,49 @@ export default async function Charactor () {
     }
   }
 
-
+  
   const addEvent = (obj) => {
     const { mixer  } = obj;   
     window.addEventListener('resize', resize);
     // addScrollEvent(plantArry, wave);
-   
-    canvas.addEventListener('pointerdown',(event) =>  handlerPointerDown(event, mixer));
-    const buttons = document.querySelector('.actions');
+    const handleEvent = (event) => handlerPointerDown(event, mixer);
+    const animationClick = (mixer, animation) =>{
+      const preAction = currentAction;
+      currentAction = mixer.clipAction(animation);
+      if(preAction !== currentAction){
+        preAction.fadeOut(0.5);
+        currentAction.reset().fadeIn(0.5).play();
+      }
+    }
+    canvas.addEventListener('pointerdown', handleEvent );
     conbatAnimations.forEach(animation => {
       const button = document.createElement('button');
       button.innerText = animation.name;
-      buttons.appendChild(button);
-      button.addEventListener('click', ()=> {
-        const preAction = currentAction;
-        currentAction = mixer.clipAction(animation);
-        if(preAction !== currentAction){
-          preAction.fadeOut(0.5);
-          currentAction.reset().fadeIn(0.5).play();
-        }
-      })
+      activeEle.appendChild(button);
+
+      button.addEventListener('click',()=> animationClick(mixer, animation))
     });
     const hasAniamtion = gltf.animations.length !== 0;
     if(hasAniamtion) {
       currentAction = mixer.clipAction(gltf.animations[0]);
       currentAction.play();
     }
+
+    eventEmitter.onDestroyCharactor(()=>{
+      canvas.removeEventListener('pointerdown', handleEvent );
+  
+      document.querySelectorAll('.actions button').forEach(button => {
+        button.removeEventListener('click', animationClick)
+      });
+  
+      document.querySelector('#warning-click').removeAttribute('class','show');
+      activeEle.setAttribute('class', 'disable');
+      barContainer.style.display = 'flex';
+      barContainer.setAttribute('class', 'disable');
+      activeEle.replaceChildren();
+      destroy();
+    });
+  
 
   };
   const draw = (obj) => {
@@ -231,13 +234,7 @@ export default async function Charactor () {
     controls.dispose();
   }
 
-  eventEmitter.onDestroyCharactor(()=>{
-    document.querySelector('#warning-click').removeAttribute('class','show');
-    activeEle.setAttribute('class', 'disable');
-    barContainer.setAttribute('class', 'disable');
-    destroy();
-  });
-
+  
   await initialize();
 }
 

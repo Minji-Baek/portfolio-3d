@@ -33,8 +33,6 @@ const Description = (data, index, showindex) => {
     document.querySelector('.description-title #subtitle').textContent = nowData.subtitle;
 
 
-
-
   }else if(nowData.url){
       const aTag = document.createElement("a");
       aTag.setAttribute('href', nowData.url);
@@ -71,8 +69,7 @@ const Description = (data, index, showindex) => {
         document.querySelector('#description').removeAttribute('class', 'description');
         document.querySelector('#description').setAttribute('class', 'description-end');
       }else{
-        const child = document.querySelector('.description-title #subtitle').children;
-        document.querySelector('.description-title #subtitle').removeChild(child[0]);
+        document.querySelector('.description-title #subtitle').replaceChildren();
         document.querySelector('#description').removeAttribute('class', 'description2');
         document.querySelector('#description').setAttribute('class', 'description-end2');
       }
